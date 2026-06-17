@@ -261,6 +261,101 @@ PROVIDERS = [
      "models": ["mimo-v2.5-pro", "mimo-v2.5", "mimo-v2-pro"],
      "key_hint": "tp-...", "note": "小米 MiMo 推理模型，Anthropic 兼容，tp- 开头的 Key"},
 
+    # ── OpenAI ──────────────────────────────────────────────────────
+    {"id": "openai", "name": "OpenAI 官方", "base_url": "https://api.openai.com/v1",
+     "models": ["gpt-5.5-pro", "gpt-5.5", "gpt-5.4-pro", "gpt-5.4",
+                "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.1-codex-max",
+                "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano",
+                "o4-mini-high", "o4-mini", "o3", "o3-mini",
+                "gpt-4.1", "gpt-4.1-mini"],
+     "key_hint": "sk-...", "note": "官方直连，GPT-5.5 / Codex / o4 最新"},
+
+    # ── Mistral ─────────────────────────────────────────────────────
+    {"id": "mistral", "name": "Mistral", "base_url": "https://api.mistral.ai/v1",
+     "models": ["mistral-large-3", "mistral-large-latest", "mistral-medium-latest",
+                "mistral-small-latest", "codestral-latest", "pixtral-large-latest",
+                "ministral-8b-latest"],
+     "key_hint": "粘贴 Mistral API Key", "note": "Mistral Large 3 最新，Codestral 代码专精"},
+
+    # ── Perplexity ──────────────────────────────────────────────────
+    {"id": "perplexity", "name": "Perplexity", "base_url": "https://api.perplexity.ai",
+     "models": ["sonar-pro", "sonar-reasoning-pro", "sonar-deep-research",
+                "sonar-reasoning", "sonar"],
+     "key_hint": "pplx-...", "note": "联网搜索增强，Deep Research 深度研究"},
+
+    # ── Cohere ──────────────────────────────────────────────────────
+    {"id": "cohere", "name": "Cohere", "base_url": "https://api.cohere.com/v2",
+     "models": ["command-a", "command-r-plus", "command-r"],
+     "key_hint": "粘贴 Cohere API Key", "note": "Command A 最新，企业级 RAG"},
+
+    # ── Amazon Nova ─────────────────────────────────────────────────
+    {"id": "amazon", "name": "Amazon (Nova)", "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com/v1",
+     "models": ["nova-premier-v1", "nova-pro-v1", "nova-lite-v1", "nova-micro-v1"],
+     "key_hint": "粘贴 AWS Bedrock API Key", "note": "Amazon Nova 系列，AWS 原生"},
+
+    # ── Together ────────────────────────────────────────────────────
+    {"id": "together", "name": "Together", "base_url": "https://api.together.xyz/v1",
+     "models": ["meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+                "deepseek-ai/DeepSeek-V4-Pro", "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+                "moonshotai/Kimi-K2.6", "zai-org/GLM-5.1",
+                "MiniMaxAI/MiniMax-M3"],
+     "key_hint": "粘贴 Together API Key", "note": "开源模型托管，Llama 4 / V4 Pro"},
+
+    # ── Fireworks ───────────────────────────────────────────────────
+    {"id": "fireworks", "name": "Fireworks", "base_url": "https://api.fireworks.ai/inference/v1",
+     "models": ["accounts/fireworks/models/llama4-maverick-instruct-basic",
+                "accounts/fireworks/models/llama4-scout-instruct-basic",
+                "accounts/fireworks/models/deepseek-v4-pro",
+                "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct"],
+     "key_hint": "粘贴 Fireworks API Key", "note": "高速推理，Llama 4 / V4 Pro"},
+
+    # ── DeepInfra ───────────────────────────────────────────────────
+    {"id": "deepinfra", "name": "DeepInfra", "base_url": "https://api.deepinfra.com/v1/openai",
+     "models": ["deepseek-ai/DeepSeek-V4-Pro",
+                "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+                "Qwen/Qwen3-Coder", "zai-org/GLM-5.1",
+                "moonshotai/Kimi-K2.6"],
+     "key_hint": "粘贴 DeepInfra API Key", "note": "极低价格开源模型"},
+
+    # ── Cerebras ────────────────────────────────────────────────────
+    {"id": "cerebras", "name": "Cerebras", "base_url": "https://api.cerebras.ai/v1",
+     "models": ["llama-4-scout-17b-16e-instruct", "llama-4-maverick-17b-128e-instruct",
+                "llama3.3-70b", "qwen-3-coder-480b", "qwen-3-32b",
+                "deepseek-r1-distill-llama-70b"],
+     "key_hint": "粘贴 Cerebras API Key", "note": "1500 tok/s 极速推理，免费额度"},
+
+    # ── 阶跃星辰 ────────────────────────────────────────────────────
+    {"id": "stepfun", "name": "阶跃星辰 (Step)", "base_url": "https://api.stepfun.com/v1",
+     "models": ["step-3.7-flash", "step-3.5-flash", "step-2-16k", "step-2-mini"],
+     "key_hint": "粘贴阶跃星辰 API Key", "note": "Step 3.7 最新，速度快"},
+
+    # ── 百川 ────────────────────────────────────────────────────────
+    {"id": "baichuan", "name": "百川", "base_url": "https://api.baichuan-ai.com/v1",
+     "models": ["Baichuan4-Turbo", "Baichuan4-Air", "Baichuan4", "Baichuan3-Turbo"],
+     "key_hint": "粘贴百川 API Key", "note": "百川 AI，Baichuan4 最新"},
+
+    # ── 零一万物 ────────────────────────────────────────────────────
+    {"id": "yi", "name": "零一万物", "base_url": "https://api.lingyiwanwu.com/v1",
+     "models": ["yi-lightning", "yi-large", "yi-large-turbo", "yi-medium", "yi-vision"],
+     "key_hint": "粘贴零一万物 API Key", "note": "Yi-Lightning 极速，yi-large 强推理"},
+
+    # ── 讯飞星火 ────────────────────────────────────────────────────
+    {"id": "spark", "name": "讯飞星火", "base_url": "https://spark-api-open.xf-yun.com/v1",
+     "models": ["4.0Ultra", "generalv3.5", "generalv3", "lite"],
+     "key_hint": "粘贴讯飞 API Key", "note": "科大讯飞，4.0Ultra 最新"},
+
+    # ── 腾讯混元 ────────────────────────────────────────────────────
+    {"id": "hunyuan", "name": "腾讯混元", "base_url": "https://api.hunyuan.cloud.tencent.com/v1",
+     "models": ["hunyuan-turbo", "hunyuan-large", "hunyuan-pro",
+                "hunyuan-standard", "hunyuan-lite"],
+     "key_hint": "粘贴腾讯混元 API Key", "note": "腾讯混元，Turbo 最新"},
+
+    # ── 文心一言 ────────────────────────────────────────────────────
+    {"id": "ernie", "name": "文心一言 / 百度", "base_url": "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat",
+     "models": ["ernie-4.5-turbo-128k", "ernie-x1-turbo", "ernie-4.0-turbo",
+                "ernie-4.0-8k", "ernie-3.5-8k"],
+     "key_hint": "粘贴百度 API Key", "note": "百度文心，ERNIE 4.5 最新"},
+
     # ── 自定义 ──────────────────────────────────────────────────────
     {"id": "custom", "name": "自定义 / 中转站", "base_url": "",
      "models": [], "custom": True,
