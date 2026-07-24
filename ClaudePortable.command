@@ -7,6 +7,18 @@ set -u
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_TYPE='claude'
 CONFIG_PORT=17580
+
+# Clean up stale port
+cleanup_stale_ports() {
+  local port=$1
+  local pid
+  pid=$(lsof -ti :"$port" 2>/dev/null)
+  if [ -n "$pid" ]; then
+    echo "  [cleanup] Killing stale process on port $port (PID: $pid)"
+    kill -9 "$pid" 2>/dev/null
+    sleep 1
+  fi
+}
 ARCH="$(uname -m)"
 
 # ── resolve_python3 ──────────────────────────────────────
@@ -62,8 +74,6 @@ preflight() {
         exit 1
     fi
 }
-preflight
-
 # 处理 --unlock 参数（删除两个 lock 文件）
 if [ "${1:-}" = "--unlock" ]; then
     LOCK_FILE="$SCRIPT_DIR/data/.lock"
@@ -78,6 +88,8 @@ if [ "${1:-}" = "--unlock" ]; then
     fi
     exit 0
 fi
+
+preflight
 
 # 处理 --config 参数（随时打开配置中心，不启动 Claude）
 if [ "${1:-}" = "--config" ]; then
