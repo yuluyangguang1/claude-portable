@@ -149,8 +149,8 @@ PROVIDERS = [
     # claude-sonnet-4-6: best speed/intelligence balance
     # claude-haiku-4-5: fastest, near-frontier
     {"id": "anthropic", "name": "Anthropic 官方", "base_url": "https://api.anthropic.com",
-     "models": ["claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
-     "key_hint": "sk-ant-...", "note": "官方直连，Opus 4.8 最新 (1M context, 动态工作流)"},
+     "models": ["claude-fable-5", "claude-sonnet-5", "claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
+     "key_hint": "sk-ant-...", "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)"},
 
     # ── OpenRouter 聚合 ─────────────────────────────────────────────
     # 一个 Key 访问所有主流模型；模型 ID 格式 provider/model-name
@@ -263,7 +263,8 @@ PROVIDERS = [
 
     # ── OpenAI ──────────────────────────────────────────────────────
     {"id": "openai", "name": "OpenAI 官方", "base_url": "https://api.openai.com/v1",
-     "models": ["gpt-5.5-pro", "gpt-5.5", "gpt-5.4-pro", "gpt-5.4",
+     "models": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna",
+                "gpt-5.5-pro", "gpt-5.5", "gpt-5.4-pro", "gpt-5.4",
                 "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.1-codex-max",
                 "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano",
                 "o4-mini-high", "o4-mini", "o3", "o3-mini",
