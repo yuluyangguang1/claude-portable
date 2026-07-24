@@ -10,6 +10,23 @@
 <meta name="cc-token" content="__CC_TOKEN__">
 <style>
 :root{
+  /* Design Tokens */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --bg:#170d02;--card:#1a1208;--secondary:#1e1508;--muted:#1c1409;
   --fg:#f5f5f5;--fg-muted:#9a968e;--border:#f5f5f526;--accent:#f5f5f5;
   --emerald:oklch(0.765 0.177 163.223);--emerald-dim:oklch(0.696 0.17 162.48);
@@ -66,7 +83,7 @@ button.ghost:hover{border-color:var(--accent);color:var(--accent);background:tra
 .steps{display:flex;gap:0;margin:0 0 24px;border:1px solid var(--border)}
 .step{flex:1;padding:13px 14px;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-muted);border-right:1px solid var(--border);transition:.2s;display:flex;align-items:center;gap:8px}
 .step:last-child{border-right:none}
-.step .num{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);font-size:9px;flex-shrink:0}
+.step .num{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);font-size:11px;flex-shrink:0}
 .step.active{color:var(--fg);background:rgba(245,240,232,.04)}
 .step.active .num{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 .step.done{color:var(--fg-muted)}
@@ -77,7 +94,7 @@ button.ghost:hover{border-color:var(--accent);color:var(--accent);background:tra
 .msg.wait{display:block;color:var(--fg-muted)}
 .saved-list{margin-top:8px}
 .saved-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);margin-bottom:-1px;font-family:var(--font-mono);font-size:13px}
-.badge{font-size:9px;padding:3px 8px;border:1px solid var(--emerald);color:var(--emerald);letter-spacing:.08em;text-transform:uppercase}
+.badge{font-size:11px;padding:3px 8px;border:1px solid var(--emerald);color:var(--emerald);letter-spacing:.08em;text-transform:uppercase}
 .kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
 .kv:last-child{border:none}
 .kv .k{color:var(--fg-muted);font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase}
@@ -106,7 +123,7 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
 .y-term-h{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--border)}
 .y-td{width:9px;height:9px;border-radius:50%}
 .y-td:nth-child(1){background:var(--fg)}.y-td:nth-child(2){background:var(--fg);opacity:.6}.y-td:nth-child(3){background:var(--fg);opacity:.3}
-.y-term-label{margin-left:auto;font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;opacity:.4;text-transform:uppercase}
+.y-term-label{margin-left:auto;font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;opacity:.4;text-transform:uppercase}
 .y-term-b{font-family:var(--font-mono);font-size:12px;line-height:1.8;padding:14px;white-space:pre-wrap;min-height:60px}
 .y-term-b .p{color:var(--accent)}.y-term-b .t{opacity:.6}
 @keyframes yblink{0%,50%{opacity:1}51%,100%{opacity:0}}
@@ -114,9 +131,26 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
 .y-theme-btn{background:none;border:none;cursor:pointer;color:var(--fg);opacity:.5;padding:6px;transition:opacity .2s}
 .y-theme-btn:hover{opacity:1}
 @media(max-width:640px){.y-display{font-size:2rem}.y-nav{flex-wrap:wrap}.y-hero{padding:32px 16px 24px}}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent, #edff45);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
 </style>
 </head>
 <body>
+<main role="main">
 <div class="y-page">
 
 <nav class="y-nav">
@@ -297,5 +331,6 @@ function toggleTheme(){const h=document.documentElement;const cur=h.getAttribute
 async function load(){try{STATE=await api('/api/state');document.getElementById('ab-port').textContent=location.port||'17580';const ts=document.getElementById('termStatus');if(STATE.has_config){document.getElementById('sdot').className='dot on';const c=STATE.current||{};document.getElementById('stext').textContent='已配置 · '+(c.name||'')+(c.model?' · '+c.model:'');if(ts)ts.textContent=' · ready ('+c.name+')';renderMain()}else{document.getElementById('sdot').className='dot off';document.getElementById('stext').textContent='未配置 — 请完成引导';if(ts)ts.textContent=' · awaiting config…';renderOnboard()}}catch(e){document.getElementById('sdot').className='dot off';document.getElementById('stext').textContent='无法连接后端'}}
 load();
 </script>
+</main>
 </body>
 </html>
