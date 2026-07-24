@@ -360,37 +360,18 @@ PROVIDERS = [
     # ── 自定义 ──────────────────────────────────────────────────────
 
     # ── 新增 Provider ──
-    {"id": "kimi", "name": "Kimi (月之暗面)", "base_url": "https://api.moonshot.cn/v1",
+    {"id": "kimi", "name": "Kimi / Moonshot", "base_url": "https://api.moonshot.cn/anthropic",
      "models": ["kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "moonshot-v1-128k"],
      "key_hint": "sk-...", "note": "Kimi K2.7 最新，代码专精"},
-    {"id": "huggingface", "name": "HuggingFace", "base_url": "https://router.huggingface.co/v1",
-     "models": ["meta-llama/Llama-4-Scout-17B-16E-Instruct", "Qwen/Qwen3-235B-A22B",
-                "deepseek-ai/DeepSeek-V4-Pro"],
-     "key_hint": "hf_...", "note": "开源模型推理，免费额度"},
-    {"id": "nvidia", "name": "NVIDIA NIM", "base_url": "https://integrate.api.nvidia.com/v1",
-     "models": ["meta/llama-4-scout-17b-16e-instruct", "nvidia/llama-3.1-nemotron-ultra-253b-v1"],
-     "key_hint": "nvapi-...", "note": "NVIDIA 推理，免费额度"},
-    {"id": "sambanova", "name": "SambaNova", "base_url": "https://api.sambanova.ai/v1",
-     "models": ["Meta-Llama-4-Scout-17B-16E-Instruct", "DeepSeek-V4-Pro"],
-     "key_hint": "粘贴 SambaNova API Key", "note": "高速推理"},
-    {"id": "ollama", "name": "Ollama (本地)", "base_url": "http://localhost:11434/v1",
-     "models": ["llama3.3:70b", "qwen3:32b", "deepseek-v4:latest", "codellama:34b"],
-     "key_hint": "通常无需 Key", "note": "本地模型，无需 API Key"},
-    {"id": "vllm", "name": "vLLM (本地)", "base_url": "http://localhost:8000/v1",
-     "models": [], "custom": True,
-     "key_hint": "通常无需 Key", "note": "本地 vLLM 推理"},
-    {"id": "lm-studio", "name": "LM Studio (本地)", "base_url": "http://localhost:1234/v1",
-     "models": [], "custom": True,
-     "key_hint": "无需 Key", "note": "本地 LM Studio"},
-    {"id": "moonshot", "name": "Moonshot", "base_url": "https://api.moonshot.ai/v1",
-     "models": ["moonshot-v1-128k", "moonshot-v1-32k", "moonshot-v1-8k"],
-     "key_hint": "sk-...", "note": "Moonshot API"},
-    {"id": "cloudflare-workers-ai", "name": "Cloudflare Workers AI", "base_url": "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1",
-     "models": ["@cf/meta/llama-3.3-70b-instruct-fp8-fast"],
-     "key_hint": "粘贴 Cloudflare API Key", "note": "Cloudflare 推理，免费额度"},
-    {"id": "vercel-ai-gateway", "name": "Vercel AI Gateway", "base_url": "https://ai-gateway.vercel.sh/v1",
-     "models": ["gpt-5.5", "claude-sonnet-5", "gemini-3-pro"],
-     "key_hint": "粘贴 Vercel API Key", "note": "Vercel AI 网关"},
+    
+    
+    
+    
+    
+    
+    
+    
+    
     {"id": "custom", "name": "自定义 / 中转站", "base_url": "",
      "models": [], "custom": True,
      "key_hint": "粘贴中转站 API Key", "note": "填写任意 Anthropic 兼容端点的 base_url"},
