@@ -1105,6 +1105,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self._reject_host():
             return
+        # CSRF gate FIRST: every write requires the per-process token,
+        # regardless of Content-Type. Without this, a malicious page the
+        # user visits could silently POST /api/save with an
+        # attacker-controlled base_url and hijack the API key + all prompts.
+        # The Host pin alone does NOT stop this. Checked before the
+        # Content-Type gate so an unauthenticated POST is rejected with 403
+        # (not 415) — matches the smoke-test contract.
+        if not self._csrf_ok():
+            self._json({"ok": False, "error": "missing or invalid token"}, 403)
+            return
         # Content-Type enforcement: reject non-JSON bodies with 415
         ct = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
         if ct != "application/json":
@@ -1112,13 +1122,6 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             self.wfile.write(b'{"ok":false,"error":"Content-Type must be application/json"}')
-            return
-        # CSRF gate: all writes require the per-process token. Without
-        # this, a malicious page the user visits could silently POST
-        # /api/save with an attacker-controlled base_url and hijack the
-        # API key + all prompts. The Host pin alone does NOT stop this.
-        if not self._csrf_ok():
-            self._json({"ok": False, "error": "missing or invalid token"}, 403)
             return
         try:
             n = min(int(self.headers.get("Content-Length", 0)), 65_536)
