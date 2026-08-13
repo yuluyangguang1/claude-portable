@@ -1000,16 +1000,23 @@ class Handler(BaseHTTPRequestHandler):
             raw_line = str(raw)
         # Check the raw request-line for traversal / injection patterns
         if '..' in raw_line or '\\' in raw_line or '\x00' in raw_line:
-            # NOTE: do NOT call self.send_error() here — at this point in
-            # request parsing `self.requestline` is not yet set, and on
-            # Python 3.12 send_error -> send_response -> log_request touches
-            # self.requestline, raising AttributeError (breaks the 400 path).
-            # send_response_only() emits the status line + headers WITHOUT
-            # logging, which is the correct early-reject path.
-            self.send_response_only(400)
-            self.send_header("Content-Type", "text/plain; charset=utf-8")
-            self.send_header("Connection", "close")
-            self.end_headers()
+            # Reject early, BEFORE any parent-class request attributes
+            # (self.requestline / self.request_version / self.headers) are
+            # initialised. http.server's send_error / send_response_only /
+            # send_response all touch those attributes, so calling them here
+            # raises AttributeError on Python 3.12 and breaks the 400 path.
+            # Write a minimal raw 400 response directly to the socket and
+            # close — no dependency on uninitialised attributes.
+            try:
+                self.wfile.write(
+                    b"HTTP/1.1 400 Bad Request\r\n"
+                    b"Content-Type: text/plain; charset=utf-8\r\n"
+                    b"Connection: close\r\n\r\n"
+                    b"Bad request path"
+                )
+                self.wfile.flush()
+            except Exception:
+                pass
             return False
         return super().parse_request()
 
