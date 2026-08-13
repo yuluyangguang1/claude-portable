@@ -149,22 +149,25 @@ PROVIDERS = [
     # claude-sonnet-4-6: best speed/intelligence balance
     # claude-haiku-4-5: fastest, near-frontier
     {"id": "anthropic", "name": "Anthropic 官方", "base_url": "https://api.anthropic.com",
-     "models": ["claude-fable-5", "claude-sonnet-5", "claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
+     "models": ["claude-fable-5", "claude-opus-5", "claude-opus-5-fast", "claude-sonnet-5", "claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
      "key_hint": "sk-ant-...", "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)"},
 
     # ── OpenRouter 聚合 ─────────────────────────────────────────────
     # 一个 Key 访问所有主流模型；模型 ID 格式 provider/model-name
     {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api",
      "models": [
+         "anthropic/claude-opus-5",
+         "anthropic/claude-opus-5-fast",
          "anthropic/claude-opus-4-8",
          "anthropic/claude-opus-4-7",
          "anthropic/claude-sonnet-4-6",
+         "google/gemini-3.6-flash",
          "google/gemini-3.1-pro-preview",
          "google/gemini-3.5-flash",
-         "x-ai/grok-4",
+         "x-ai/grok-4.6",
          "deepseek/deepseek-v4-pro",
          "minimax/minimax-m2.7",
-         "moonshotai/kimi-k2.6",
+         "moonshotai/kimi-k3",
          "qwen/qwen3.6-plus",
      ],
      "key_hint": "sk-or-...", "note": "聚合平台，一个 Key 用所有模型，含 Gemini/Grok/Kimi"},
@@ -174,7 +177,7 @@ PROVIDERS = [
     # V4-Flash: 284B MoE, 1M context, 低延迟
     # deepseek-chat/reasoner: 2026-07-24 废弃，保留作兼容过渡
     {"id": "deepseek", "name": "DeepSeek", "base_url": "https://api.deepseek.com/anthropic",
-     "models": ["deepseek-v4-pro", "deepseek-v4-flash", "deepseek-chat", "deepseek-reasoner"],
+     "models": ["deepseek-v4-pro", "deepseek-v4-pro-0813", "deepseek-v4-flash", "deepseek-v4-flash-0731", "deepseek-chat", "deepseek-r1"],
      "key_hint": "sk-...", "note": "国产，V4-Pro 1M context，性价比极高，Anthropic 兼容"},
 
     # ── MiniMax ─────────────────────────────────────────────────────
@@ -196,7 +199,7 @@ PROVIDERS = [
     # K2.6: 1T MoE，256K context，多模态，SWE-Bench Pro 58.6%
     # K2.5: 上一代，256K context
     {"id": "kimi", "name": "Kimi / Moonshot", "base_url": "https://api.moonshot.cn/anthropic",
-     "models": ["kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k"],
+     "models": ["kimi-k3", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k"],
      "key_hint": "sk-...", "note": "国产，K2.6 最新，1T MoE，256K context，多模态"},
 
     # ── 豆包 / 火山引擎 ─────────────────────────────────────────────
@@ -232,13 +235,13 @@ PROVIDERS = [
     # Gemini 3.1 Pro: 长上下文，工具调用，agentic
     # Gemini 3.5 Flash: 高效率，接近 Pro 水平
     {"id": "gemini", "name": "Google Gemini", "base_url": "https://generativelanguage.googleapis.com/v1beta/anthropic",
-     "models": ["gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-pro-preview", "gemini-3-flash-preview"],
+     "models": ["gemini-3.6-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview"],
      "key_hint": "AIza...", "note": "Google，Gemini 3.1 Pro 最新，1M context，多模态"},
 
     # ── xAI Grok ────────────────────────────────────────────────────
     # Grok-4: 256K context，并行工具调用，图文输入
     {"id": "xai", "name": "xAI Grok", "base_url": "https://api.x.ai/v1/anthropic",
-     "models": ["grok-4", "grok-3", "grok-3-mini"],
+     "models": ["grok-4.6", "grok-4", "grok-3", "grok-3-mini"],
      "key_hint": "xai-...", "note": "xAI，Grok-4 最新，256K context，推理强"},
 
     # ── Groq ────────────────────────────────────────────────────────
@@ -258,7 +261,7 @@ PROVIDERS = [
     # ── 小米 MiMo ─────────────────────────────────────────────────────
     # MiMo-v2.5-pro: 小米自研推理模型，Anthropic 兼容端点
     {"id": "xiaomi", "name": "小米 MiMo", "base_url": "https://token-plan-cn.xiaomimimo.com/anthropic",
-     "models": ["mimo-v2.5-pro", "mimo-v2.5", "mimo-v2-pro"],
+     "models": ["mimo-v2.5-pro", "mimo-v2.5"],
      "key_hint": "tp-...", "note": "小米 MiMo 推理模型，Anthropic 兼容，tp- 开头的 Key"},
 
     # ── OpenAI ──────────────────────────────────────────────────────
@@ -411,16 +414,16 @@ PROVIDERS = [
      "models": ["mimo-v2.5-pro", "mimo-v2.5"],
      "key_hint": "粘贴小米 API Key", "note": "小米 Token Plan"},
     {"id": "aihubmix", "name": "AiHubMix", "base_url": "https://aihubmix.com",
-     "models": ["claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
      "key_hint": "粘贴 AiHubMix API Key", "note": "聚合平台"},
     {"id": "cherryin", "name": "CherryIN", "base_url": "https://open.cherryin.net",
-     "models": ["claude-opus-4-8", "claude-sonnet-5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5"],
      "key_hint": "粘贴 CherryIN API Key", "note": "Claude 中转"},
     {"id": "therouter", "name": "TheRouter", "base_url": "https://api.therouter.ai",
-     "models": ["claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
      "key_hint": "粘贴 TheRouter API Key", "note": "聚合平台"},
     {"id": "novita", "name": "Novita AI", "base_url": "https://api.novita.ai/anthropic",
-     "models": ["claude-opus-4-8", "claude-sonnet-5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5"],
      "key_hint": "粘贴 Novita API Key", "note": "聚合平台"},
     {"id": "modelscope", "name": "ModelScope", "base_url": "https://api-inference.modelscope.cn",
      "models": ["ZhipuAI/GLM-5.1", "Qwen/Qwen3-235B-A22B"],
@@ -429,10 +432,10 @@ PROVIDERS = [
      "models": ["meta/llama-4-scout-17b-16e-instruct"],
      "key_hint": "粘贴 NVIDIA API Key", "note": "NVIDIA 推理"},
     {"id": "packycode", "name": "PackyCode", "base_url": "https://www.packyapi.com",
-     "models": ["claude-opus-4-8", "claude-sonnet-5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5"],
      "key_hint": "粘贴 PackyCode API Key", "note": "第三方中转"},
     {"id": "github-copilot", "name": "GitHub Copilot", "base_url": "https://api.githubcopilot.com",
-     "models": ["claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
+     "models": ["claude-opus-5", "claude-opus-4-8", "claude-sonnet-5", "gpt-5.5"],
      "key_hint": "粘贴 GitHub Copilot Token", "note": "GitHub Copilot"},
     {"id": "custom", "name": "自定义 / 中转站", "base_url": "",
      "models": [], "custom": True,
