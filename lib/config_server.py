@@ -1000,7 +1000,16 @@ class Handler(BaseHTTPRequestHandler):
             raw_line = str(raw)
         # Check the raw request-line for traversal / injection patterns
         if '..' in raw_line or '\\' in raw_line or '\x00' in raw_line:
-            self.send_error(400, "Bad request path")
+            # NOTE: do NOT call self.send_error() here — at this point in
+            # request parsing `self.requestline` is not yet set, and on
+            # Python 3.12 send_error -> send_response -> log_request touches
+            # self.requestline, raising AttributeError (breaks the 400 path).
+            # send_response_only() emits the status line + headers WITHOUT
+            # logging, which is the correct early-reject path.
+            self.send_response_only(400)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Connection", "close")
+            self.end_headers()
             return False
         return super().parse_request()
 
