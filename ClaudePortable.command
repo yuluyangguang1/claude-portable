@@ -89,6 +89,11 @@ if [ "${1:-}" = "--unlock" ]; then
     exit 0
 fi
 
+# macOS: 移除 quarantine 属性（Gatekeeper）— 必须在 preflight 之前，
+# 否则首次运行时 --version 测试因隔离属性跑不起来，误报 "Binary won't run"
+xattr -dr com.apple.quarantine "$BIN_DIR/claude" 2>/dev/null
+xattr -dr com.apple.quarantine "$BIN_DIR/cc-switch" 2>/dev/null
+
 preflight
 
 # 处理 --config 参数（随时打开配置中心，不启动 Claude）
@@ -136,10 +141,6 @@ if [ ! -f "$BIN_DIR/claude" ]; then
 fi
 
 chmod +x "$BIN_DIR/claude" "$BIN_DIR/cc-switch" 2>/dev/null
-
-# macOS: 移除 quarantine 属性（Gatekeeper 拦截）
-xattr -dr com.apple.quarantine "$BIN_DIR/claude" 2>/dev/null
-xattr -dr com.apple.quarantine "$BIN_DIR/cc-switch" 2>/dev/null
 
 # ═══════════════════════════════════════════
 # 单实例锁（防止并发运行）

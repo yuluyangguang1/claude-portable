@@ -149,74 +149,104 @@ PROVIDERS = [
     # claude-sonnet-4-6: best speed/intelligence balance
     # claude-haiku-4-5: fastest, near-frontier
     {"id": "anthropic", "name": "Anthropic 官方", "base_url": "https://api.anthropic.com",
-     "models": ["claude-fable-5", "claude-opus-5", "claude-opus-5-fast", "claude-sonnet-5", "claude-opus-4-8", "claude-opus-4-7", "claude-sonnet-4-6", "claude-haiku-4-5"],
-     "key_hint": "sk-ant-...", "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)"},
+     "models": ["claude-fable-5", "claude-opus-5", "claude-opus-5-fast", "claude-opus-4-8-fast", "claude-opus-4-8",
+                "claude-opus-4-7-fast", "claude-opus-4-7", "claude-opus-4-6-fast", "claude-opus-4-6", "claude-opus-4-5",
+                "claude-sonnet-5", "claude-sonnet-4-6", "claude-haiku-latest", "claude-haiku-4-5"],
+     "key_hint": "sk-ant-...", "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)",
+     "tags": ["hot"]},
 
     # ── OpenRouter 聚合 ─────────────────────────────────────────────
     # 一个 Key 访问所有主流模型；模型 ID 格式 provider/model-name
     {"id": "openrouter", "name": "OpenRouter", "base_url": "https://openrouter.ai/api",
      "models": [
+         "anthropic/claude-fable-5",
          "anthropic/claude-opus-5",
          "anthropic/claude-opus-5-fast",
          "anthropic/claude-opus-4-8",
          "anthropic/claude-opus-4-7",
          "anthropic/claude-sonnet-4-6",
+         "openai/gpt-5.6-sol-pro",
+         "openai/gpt-5.6-sol",
+         "openai/gpt-5.5-pro",
+         "google/gemini-3.7-flash",
          "google/gemini-3.6-flash",
-         "google/gemini-3.1-pro-preview",
-         "google/gemini-3.5-flash",
+         "google/gemini-3.5-flash-lite",
          "x-ai/grok-4.6",
+         "x-ai/grok-4.5",
+         "x-ai/grok-4.3",
          "deepseek/deepseek-v4-pro",
-         "minimax/minimax-m2.7",
+         "deepseek/deepseek-v4-pro-0813",
+         "deepseek/deepseek-v4-flash",
+         "qwen/qwen3.7-max",
+         "qwen/qwen3.7-plus",
+         "qwen/qwen3.7-flash",
+         "meta-llama/llama-4-maverick",
+         "meta-llama/llama-4-scout",
          "moonshotai/kimi-k3",
-         "qwen/qwen3.6-plus",
+         "z-ai/glm-5.3",
+         "z-ai/glm-5.2",
+         "minimax/minimax-m3",
+         "minimax/minimax-m2.7",
+         "mistralai/mistral-large",
      ],
-     "key_hint": "sk-or-...", "note": "聚合平台，一个 Key 用所有模型，含 Gemini/Grok/Kimi"},
+     "key_hint": "sk-or-...", "note": "聚合 100+ 模型，一个 Key 通用",
+     "tags": ["hot", "cheap"]},
 
     # ── DeepSeek ────────────────────────────────────────────────────
     # V4-Pro: 1.6T MoE, 1M context, Anthropic 兼容端点
     # V4-Flash: 284B MoE, 1M context, 低延迟
     # deepseek-chat/reasoner: 2026-07-24 废弃，保留作兼容过渡
     {"id": "deepseek", "name": "DeepSeek", "base_url": "https://api.deepseek.com/anthropic",
-     "models": ["deepseek-v4-pro", "deepseek-v4-pro-0813", "deepseek-v4-flash", "deepseek-v4-flash-0731", "deepseek-chat", "deepseek-r1"],
-     "key_hint": "sk-...", "note": "国产，V4-Pro 1M context，性价比极高，Anthropic 兼容"},
+     "models": ["deepseek-v4-pro", "deepseek-v4-pro-0813", "deepseek-v4-flash", "deepseek-v4-flash-0731", "deepseek-r1",
+                "deepseek-r1-0528", "deepseek-chat"],
+     "key_hint": "sk-...", "note": "国产，V4-Pro 1M context，性价比极高，Anthropic 兼容",
+     "tags": ["hot", "cn", "cheap"]},
 
     # ── MiniMax ─────────────────────────────────────────────────────
     # M2.7: 最新，自我进化，Office 套件强
     # M2.5: SWE-Bench 80.2%，编码旗舰
     # M2: 轻量高效，10B active / 230B total
     {"id": "minimax", "name": "MiniMax (海螺)", "base_url": "https://api.minimaxi.com/anthropic",
-     "models": ["MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2"],
-     "key_hint": "粘贴 MiniMax API Key", "note": "国产，M2.7 最新，Anthropic 兼容，速度快"},
+     "models": ["MiniMax-M3", "MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2"],
+     "key_hint": "粘贴 MiniMax API Key", "note": "国产，M3 最新，Anthropic 兼容，速度快",
+     "tags": ["cn", "hot"]},
 
     # ── 智谱 GLM ────────────────────────────────────────────────────
     # GLM-5.1: 744B MoE，SWE-Bench Pro SOTA，8h 持续执行
     # GLM-5: 上一代旗舰
     {"id": "zhipu", "name": "智谱 GLM", "base_url": "https://open.bigmodel.cn/api/anthropic",
-     "models": ["glm-5.1", "glm-5", "glm-4.6", "glm-4.5-air", "glm-4.5-flash"],
-     "key_hint": "粘贴智谱 API Key", "note": "国产，GLM-5.1 最新，744B MoE，编码 SOTA"},
+     "models": ["glm-5.3", "glm-5.2", "glm-5.1", "glm-5-turbo", "glm-5", "glm-4.7", "glm-4.7-flash",
+                "glm-4.6", "glm-4.5-air", "glm-4.5-flash"],
+     "key_hint": "粘贴智谱 API Key", "note": "国产，GLM-5.3 最新，744B MoE，编码 SOTA",
+     "tags": ["cn", "hot"]},
 
     # ── Kimi / Moonshot ─────────────────────────────────────────────
     # K2.6: 1T MoE，256K context，多模态，SWE-Bench Pro 58.6%
     # K2.5: 上一代，256K context
     {"id": "kimi", "name": "Kimi / Moonshot", "base_url": "https://api.moonshot.cn/anthropic",
-     "models": ["kimi-k3", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k"],
-     "key_hint": "sk-...", "note": "国产，K2.6 最新，1T MoE，256K context，多模态"},
+     "models": ["kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k"],
+     "key_hint": "sk-...", "note": "国产，K2.7 最新，1T MoE，256K context，多模态",
+     "tags": ["cn", "hot"]},
 
     # ── 豆包 / 火山引擎 ─────────────────────────────────────────────
     # Seed-1.6: 230B MoE，256K context，自适应思考
     # Seed-1.6-thinking: 深度推理模式
     # Seed-1.6-flash: 低延迟版本
     {"id": "doubao", "name": "豆包 / 火山引擎", "base_url": "https://ark.cn-beijing.volces.com/api/v3/anthropic",
-     "models": ["doubao-seed-1.6", "doubao-seed-1.6-thinking", "doubao-seed-1.6-flash", "doubao-1.5-pro-256k"],
-     "key_hint": "粘贴火山引擎 API Key", "note": "字节跳动，Seed 1.6 最新，256K context，多模态"},
+     "models": ["doubao-seed-1.6", "doubao-seed-1.6-thinking", "doubao-seed-1.6-flash", "doubao-1.5-pro-256k",
+                "doubao-1.5-lite-32k"],
+     "key_hint": "粘贴火山引擎 API Key", "note": "字节跳动，Seed 1.6 最新，256K context，多模态",
+     "tags": ["cn", "cheap"]},
 
     # ── 通义千问 / 阿里云 ───────────────────────────────────────────
     # Qwen3.6-Plus: 1M context，SWE-Bench 78.8%，Terminal-Bench 61.6%
     # Qwen3.6-35B-A3B: 开源版，35B total / 3B active
     # qwen3-max: 上一代旗舰
     {"id": "dashscope", "name": "通义千问 / 阿里", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/anthropic",
-     "models": ["qwen3.6-plus", "qwen3.6-35b-a3b", "qwen3-coder-plus", "qwen3-max", "qwen-max-latest"],
-     "key_hint": "sk-...", "note": "阿里云，Qwen3.6-Plus 最新，1M context，编码 SOTA"},
+     "models": ["qwen3.7-max", "qwen3.7-plus", "qwen3.7-flash", "qwen3.6-max-preview", "qwen3.6-plus",
+                "qwen3-coder-plus", "qwen3-coder", "qwen3-max", "qwen-max-latest", "qwen-plus-latest"],
+     "key_hint": "sk-...", "note": "阿里云，Qwen 3.7 最新，1M context，编码 SOTA",
+     "tags": ["cn", "hot"]},
 
     # ── SiliconFlow 硅基流动 ────────────────────────────────────────
     # 国产聚合推理平台，托管主流开源模型，Anthropic 兼容端点
@@ -224,25 +254,30 @@ PROVIDERS = [
      "models": [
          "deepseek-ai/DeepSeek-V4-Pro",
          "deepseek-ai/DeepSeek-V4-Flash",
+         "Qwen/Qwen3.7-Max",
          "Qwen/Qwen3.6-Plus",
-         "zai-org/GLM-5.1",
+         "THUDM/GLM-5.1",
          "moonshotai/Kimi-K2.6",
+         "deepseek-ai/DeepSeek-R1",
      ],
-     "key_hint": "sk-...", "note": "国产聚合，托管 DeepSeek/Qwen/GLM/Kimi，一站式"},
+     "key_hint": "sk-...", "note": "国产聚合，托管 DeepSeek/Qwen/GLM/Kimi，一站式",
+     "tags": ["cn", "cheap"]},
 
     # ── Google Gemini ───────────────────────────────────────────────
     # 通过 Google AI Studio 的 Anthropic 兼容端点访问
     # Gemini 3.1 Pro: 长上下文，工具调用，agentic
     # Gemini 3.5 Flash: 高效率，接近 Pro 水平
     {"id": "gemini", "name": "Google Gemini", "base_url": "https://generativelanguage.googleapis.com/v1beta/anthropic",
-     "models": ["gemini-3.6-flash", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview"],
-     "key_hint": "AIza...", "note": "Google，Gemini 3.1 Pro 最新，1M context，多模态"},
+     "models": ["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview"],
+     "key_hint": "AIza...", "note": "Google，Gemini 3.7 Flash 最新，1M context，多模态",
+     "tags": ["hot"]},
 
     # ── xAI Grok ────────────────────────────────────────────────────
     # Grok-4: 256K context，并行工具调用，图文输入
     {"id": "xai", "name": "xAI Grok", "base_url": "https://api.x.ai/v1/anthropic",
-     "models": ["grok-4.6", "grok-4", "grok-3", "grok-3-mini"],
-     "key_hint": "xai-...", "note": "xAI，Grok-4 最新，256K context，推理强"},
+     "models": ["grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20", "grok-4.20-multi-agent", "grok-4", "grok-3", "grok-3-mini"],
+     "key_hint": "xai-...", "note": "xAI，Grok-4.6 最新，256K context，推理强",
+     "tags": ["hot"]},
 
     # ── Groq ────────────────────────────────────────────────────────
     # 超快 LPU 推理，>460 tok/s
@@ -251,51 +286,62 @@ PROVIDERS = [
     # compound-beta: Groq 自研 agentic 系统（含 web search）
     {"id": "groq", "name": "Groq", "base_url": "https://api.groq.com/anthropic",
      "models": [
-         "meta-llama/llama-4-scout-17b-16e-instruct",
-         "meta-llama/llama-4-maverick-17b-128e-instruct",
-         "compound-beta",
+         "llama-4-scout-17b-16e-instruct",
+         "llama-4-maverick",
          "llama-3.3-70b-versatile",
+         "deepseek-r1-distill-llama-70b",
+         "qwen/qwen3-32b",
+         "gemma2-9b-it",
+         "compound-beta",
      ],
-     "key_hint": "gsk_...", "note": "超快 LPU 推理 >460 tok/s，Llama-4 最新，免费额度"},
+     "key_hint": "gsk_...", "note": "超快 LPU 推理 >460 tok/s，Llama-4 最新，免费额度",
+     "tags": ["fast", "free"]},
 
     # ── 小米 MiMo ─────────────────────────────────────────────────────
     # MiMo-v2.5-pro: 小米自研推理模型，Anthropic 兼容端点
     {"id": "xiaomi", "name": "小米 MiMo", "base_url": "https://token-plan-cn.xiaomimimo.com/anthropic",
      "models": ["mimo-v2.5-pro", "mimo-v2.5"],
-     "key_hint": "tp-...", "note": "小米 MiMo 推理模型，Anthropic 兼容，tp- 开头的 Key"},
+     "key_hint": "tp-...", "note": "小米 MiMo 推理模型，Anthropic 兼容，tp- 开头的 Key",
+     "tags": ["cn"]},
 
     # ── OpenAI ──────────────────────────────────────────────────────
     {"id": "openai", "name": "OpenAI 官方", "base_url": "https://api.openai.com/v1",
-     "models": ["gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna",
+     "models": ["gpt-5.6-sol-pro", "gpt-5.6-sol", "gpt-5.6-terra-pro", "gpt-5.6-terra",
+                "gpt-5.6-luna-pro", "gpt-5.6-luna",
                 "gpt-5.5-pro", "gpt-5.5", "gpt-5.4-pro", "gpt-5.4",
                 "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.1-codex-max",
-                "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano",
+                "gpt-5.1-codex-mini", "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano",
                 "o4-mini-high", "o4-mini", "o3", "o3-mini",
                 "gpt-4.1", "gpt-4.1-mini"],
-     "key_hint": "sk-...", "note": "官方直连，GPT-5.5 / Codex / o4 最新"},
+     "key_hint": "sk-...", "note": "官方直连，GPT-5.6 Sol/Terra/Luna 最新",
+     "tags": ["hot"]},
 
     # ── Mistral ─────────────────────────────────────────────────────
     {"id": "mistral", "name": "Mistral", "base_url": "https://api.mistral.ai/v1",
-     "models": ["mistral-large-3", "mistral-large-latest", "mistral-medium-latest",
+     "models": ["mistral-large-2512", "mistral-large-latest", "mistral-medium-latest",
                 "mistral-small-latest", "codestral-latest", "pixtral-large-latest",
                 "ministral-8b-latest"],
-     "key_hint": "粘贴 Mistral API Key", "note": "Mistral Large 3 最新，Codestral 代码专精"},
+     "key_hint": "粘贴 Mistral API Key", "note": "Mistral Large 2512 最新，Codestral 代码专精",
+     "tags": ["hot"]},
 
     # ── Perplexity ──────────────────────────────────────────────────
     {"id": "perplexity", "name": "Perplexity", "base_url": "https://api.perplexity.ai",
      "models": ["sonar-pro", "sonar-reasoning-pro", "sonar-deep-research",
                 "sonar-reasoning", "sonar"],
-     "key_hint": "pplx-...", "note": "联网搜索增强，Deep Research 深度研究"},
+     "key_hint": "pplx-...", "note": "联网搜索增强，Deep Research 深度研究",
+     "tags": ["hot"]},
 
     # ── Cohere ──────────────────────────────────────────────────────
     {"id": "cohere", "name": "Cohere", "base_url": "https://api.cohere.com/v2",
      "models": ["command-a", "command-r-plus", "command-r"],
-     "key_hint": "粘贴 Cohere API Key", "note": "Command A 最新，企业级 RAG"},
+     "key_hint": "粘贴 Cohere API Key", "note": "Command A 最新，企业级 RAG",
+     "tags": ["free"]},
 
     # ── Amazon Nova ─────────────────────────────────────────────────
     {"id": "amazon", "name": "Amazon (Nova)", "base_url": "https://bedrock-runtime.us-east-1.amazonaws.com/v1",
      "models": ["nova-premier-v1", "nova-pro-v1", "nova-lite-v1", "nova-micro-v1"],
-     "key_hint": "粘贴 AWS Bedrock API Key", "note": "Amazon Nova 系列，AWS 原生"},
+     "key_hint": "粘贴 AWS Bedrock API Key", "note": "Amazon Nova 系列，AWS 原生",
+     "tags": ["free"]},
 
     # ── Together ────────────────────────────────────────────────────
     {"id": "together", "name": "Together", "base_url": "https://api.together.xyz/v1",
@@ -303,7 +349,8 @@ PROVIDERS = [
                 "deepseek-ai/DeepSeek-V4-Pro", "Qwen/Qwen3-Coder-480B-A35B-Instruct",
                 "moonshotai/Kimi-K2.6", "zai-org/GLM-5.1",
                 "MiniMaxAI/MiniMax-M3"],
-     "key_hint": "粘贴 Together API Key", "note": "开源模型托管，Llama 4 / V4 Pro"},
+     "key_hint": "粘贴 Together API Key", "note": "开源模型托管，Llama 4 / V4 Pro",
+     "tags": ["cheap"]},
 
     # ── Fireworks ───────────────────────────────────────────────────
     {"id": "fireworks", "name": "Fireworks", "base_url": "https://api.fireworks.ai/inference/v1",
@@ -311,7 +358,8 @@ PROVIDERS = [
                 "accounts/fireworks/models/llama4-scout-instruct-basic",
                 "accounts/fireworks/models/deepseek-v4-pro",
                 "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct"],
-     "key_hint": "粘贴 Fireworks API Key", "note": "高速推理，Llama 4 / V4 Pro"},
+     "key_hint": "粘贴 Fireworks API Key", "note": "高速推理，Llama 4 / V4 Pro",
+     "tags": ["fast", "cheap"]},
 
     # ── DeepInfra ───────────────────────────────────────────────────
     {"id": "deepinfra", "name": "DeepInfra", "base_url": "https://api.deepinfra.com/v1/openai",
@@ -319,29 +367,34 @@ PROVIDERS = [
                 "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
                 "Qwen/Qwen3-Coder", "zai-org/GLM-5.1",
                 "moonshotai/Kimi-K2.6"],
-     "key_hint": "粘贴 DeepInfra API Key", "note": "极低价格开源模型"},
+     "key_hint": "粘贴 DeepInfra API Key", "note": "极低价格开源模型",
+     "tags": ["cheap"]},
 
     # ── Cerebras ────────────────────────────────────────────────────
     {"id": "cerebras", "name": "Cerebras", "base_url": "https://api.cerebras.ai/v1",
      "models": ["llama-4-scout-17b-16e-instruct", "llama-4-maverick-17b-128e-instruct",
                 "llama3.3-70b", "qwen-3-coder-480b", "qwen-3-32b",
                 "deepseek-r1-distill-llama-70b"],
-     "key_hint": "粘贴 Cerebras API Key", "note": "1500 tok/s 极速推理，免费额度"},
+     "key_hint": "粘贴 Cerebras API Key", "note": "1500 tok/s 极速推理，免费额度",
+     "tags": ["fast", "free"]},
 
     # ── 阶跃星辰 ────────────────────────────────────────────────────
     {"id": "stepfun", "name": "阶跃星辰 (Step)", "base_url": "https://api.stepfun.com/v1",
      "models": ["step-3.7-flash", "step-3.5-flash", "step-2-16k", "step-2-mini"],
-     "key_hint": "粘贴阶跃星辰 API Key", "note": "Step 3.7 最新，速度快"},
+     "key_hint": "粘贴阶跃星辰 API Key", "note": "Step 3.7 最新，速度快",
+     "tags": ["cn", "fast"]},
 
     # ── 百川 ────────────────────────────────────────────────────────
     {"id": "baichuan", "name": "百川", "base_url": "https://api.baichuan-ai.com/v1",
      "models": ["Baichuan4-Turbo", "Baichuan4-Air", "Baichuan4", "Baichuan3-Turbo"],
-     "key_hint": "粘贴百川 API Key", "note": "百川 AI，Baichuan4 最新"},
+     "key_hint": "粘贴百川 API Key", "note": "百川 AI，Baichuan4 最新",
+     "tags": ["cn"]},
 
     # ── 零一万物 ────────────────────────────────────────────────────
     {"id": "yi", "name": "零一万物", "base_url": "https://api.lingyiwanwu.com/v1",
      "models": ["yi-lightning", "yi-large", "yi-large-turbo", "yi-medium", "yi-vision"],
-     "key_hint": "粘贴零一万物 API Key", "note": "Yi-Lightning 极速，yi-large 强推理"},
+     "key_hint": "粘贴零一万物 API Key", "note": "Yi-Lightning 极速，yi-large 强推理",
+     "tags": ["cn"]},
 
     # ── 讯飞星火 ────────────────────────────────────────────────────
     {"id": "spark", "name": "讯飞星火", "base_url": "https://spark-api-open.xf-yun.com/v1",
