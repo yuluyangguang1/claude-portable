@@ -54,11 +54,11 @@
 [data-theme="light"]{--bg-base:246 243 236;--mid-base:33 27 19;--dim-base:128 113 94;--accent-base:187 52 36;--warn-base:168 116 16;--danger-base:178 58 40;--bg:rgb(var(--bg-base));--card:rgb(var(--bg-base) / .55);--secondary:rgb(var(--mid-base) / .05);--muted:rgb(var(--mid-base) / .08);--fg:rgb(var(--mid-base));--fg-muted:rgb(var(--dim-base));--border:rgb(var(--mid-base) / .14);--border-strong:rgb(var(--mid-base) / .28);--hover:rgb(var(--mid-base) / .04);--hover-strong:rgb(var(--mid-base) / .07);--accent:rgb(var(--accent-base));--accent-soft:rgb(var(--accent-base) / .06);--code-bg:rgb(var(--mid-base) / .06)}
 @media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg-base:246 243 236;--mid-base:33 27 19;--dim-base:128 113 94;--accent-base:187 52 36;--warn-base:168 116 16;--danger-base:178 58 40;--bg:rgb(var(--bg-base));--card:rgb(var(--bg-base) / .55);--secondary:rgb(var(--mid-base) / .05);--muted:rgb(var(--mid-base) / .08);--fg:rgb(var(--mid-base));--fg-muted:rgb(var(--dim-base));--border:rgb(var(--mid-base) / .14);--border-strong:rgb(var(--mid-base) / .28);--hover:rgb(var(--mid-base) / .04);--hover-strong:rgb(var(--mid-base) / .07);--accent:rgb(var(--accent-base));--accent-soft:rgb(var(--accent-base) / .06);--code-bg:rgb(var(--mid-base) / .06)}}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
 /* Hermes/OpenClaw style background layers */
 .bg-i { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .bg-i img {
-  width: 100vw; height: 100vh; object-fit: cover;
+  width: 100%; height: 100%; object-fit: cover;
   opacity: 0.06; filter: grayscale(1) brightness(0.7);
 }
 [data-theme="light"] .bg-i img { opacity: 0.04; filter: grayscale(1) brightness(1.5); }
@@ -98,9 +98,9 @@ input,select{width:100%;padding:9px 12px;background:transparent;border:1px solid
 input:focus,select:focus{border-color:var(--accent)}
 input::placeholder{color:var(--fg-muted);opacity:.5}
 select{cursor:pointer}select option{background:var(--bg);color:var(--fg)}
-.provider-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-bottom:none;margin-bottom:14px}
-.pcard{padding:16px 10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
-.pcard:nth-child(4n){border-right:none}
+.provider-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border:1px solid var(--border);border-bottom:none;margin-bottom:14px;overflow:hidden}
+.pcard{width:25%;max-width:25%;box-sizing:border-box;padding:16px 10px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.pcard-ph{width:25%;max-width:25%;box-sizing:border-box;padding:16px 10px;visibility:hidden}
 
 .pcard:hover{background:var(--hover)}
 .pcard.sel{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
@@ -143,11 +143,11 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
 .toast.show{transform:translateX(0);opacity:1}
 .toast.ok{border-color:var(--emerald);color:var(--emerald)}
 .toast.err{border-color:var(--destructive);color:var(--destructive)}
-@media(max-width:820px){.provider-grid{grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.pcard{flex:0 0 50%;max-width:50%}
   .pcard:nth-child(4n){border-right:1px solid var(--border)}
   .pcard:nth-child(2n){border-right:none}
   .pcard:nth-last-child(-n+2){border-bottom:none}}
-@media(max-width:480px){.provider-grid{grid-template-columns:1fr}.pcard{border-right:none}.pcard:nth-child(4n){border-right:none}.steps{flex-direction:column}.step{border-right:none;border-bottom:1px solid var(--border)}.step:last-child{border-bottom:none}}
+@media(max-width:480px){.pcard{flex:0 0 100%;max-width:100%;border-right:none}.pcard:nth-child(4n){border-right:none}.steps{flex-direction:column}.step{border-right:none;border-bottom:1px solid var(--border)}.step:last-child{border-bottom:none}}
 /* yuai nav + hero */
 .y-page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px}
 .y-nav{display:flex;border:1px solid var(--border);border-top:none}
@@ -197,6 +197,18 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
 }
 .skip-link{position:absolute;top:-40px;left:0;background:var(--accent);color:var(--bg);padding:8px 16px;z-index:1000;transition:top .3s;font-family:var(--font-sans);font-size:13px}
 .skip-link:focus{top:0}
+/* Tag filter bar */
+.tag-bar{display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border);flex-wrap:wrap}
+.tag-btn{padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--fg-muted);border-right:1px solid var(--border);transition:.15s;background:transparent;border-top:none;border-bottom:none;border-left:none}
+.tag-btn:last-child{border-right:none}
+.tag-btn:hover{color:var(--fg);background:rgba(245,240,232,.03)}
+.tag-btn.active{color:var(--accent);background:rgba(245,240,232,.05)}
+/* Search box */
+.search-box{margin-bottom:14px}
+.search-box input{width:100%;padding:9px 12px 9px 36px;background:transparent;border:1px solid var(--border);color:var(--fg);font-family:var(--font-mono);font-size:13px;outline:none;transition:border-color .15s}
+.search-box input:focus{border-color:var(--accent)}
+.search-box{position:relative}
+.search-box::before{content:'⌕';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg-muted);font-size:14px;pointer-events:none;z-index:1}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" onerror="this.removeAttribute('href')" />
 <style>
@@ -258,6 +270,8 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
       <div id="obs1">
         <h2>选择 API 供应商</h2>
         <div class="desc">Claude Code 走 Anthropic 协议，下面的国产供应商都提供兼容端点。</div>
+        <div class="tag-bar" id="ob-tags"></div>
+        <div class="search-box"><input id="ob-search" placeholder="搜索供应商名称或备注…" aria-label="搜索供应商" oninput="obFilter()"></div>
         <div class="provider-grid" id="ob-grid"></div>
         <div class="btns"><button onclick="obNext(2)" id="ob1next" disabled>下一步</button></div>
       </div>
@@ -305,6 +319,8 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
       <div class="section">
         <h2>当前供应商</h2>
         <div class="desc">修改后点保存即生效，下次启动 Claude Code 使用新配置。</div>
+        <div class="tag-bar" id="m-tags"></div>
+        <div class="search-box"><input id="m-search" placeholder="搜索供应商名称或备注…" oninput="mFilter()"></div>
         <div class="provider-grid" id="m-grid"></div>
         <label id="m-urllabel" style="display:none">Base URL</label>
         <input id="m-url" placeholder="https://your-gateway/anthropic" style="display:none">
@@ -373,49 +389,27 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
 <div class="toast" id="toast"></div>
 
 <script>
-let STATE=null,obSel=null,mSel=null;
+let STATE=null,obSel=null,mSel=null,obTag='all',mTag='all',obSearch='',mSearch='';
+const TAGS=[{id:'all',label:'全部'},{id:'hot',label:'热门'},{id:'cn',label:'国产'},{id:'cheap',label:'便宜'},{id:'fast',label:'极速'},{id:'free',label:'免费'}];
 function toast(msg,kind){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(kind||'');setTimeout(()=>t.className='toast',2600)}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 async function api(path,method,body){const tok=(document.querySelector('meta[name="cc-token"]')||{}).content||'';const opt={method:method||'GET',headers:{'Content-Type':'application/json','X-CC-Token':tok}};if(body)opt.body=JSON.stringify(body);const r=await fetch(path,opt);return r.json()}
 function fillModels(sel,custom,provider){sel.innerHTML='';const p=STATE.providers_catalog.find(x=>x.id===provider);if(!p||p.custom||!p.models.length){sel.style.display='none';custom.style.display='block';return}sel.style.display='block';custom.style.display='none';if(p.models.length===1){const o=document.createElement('option');o.value=p.models[0];o.textContent=p.models[0];o.selected=true;sel.appendChild(o);return}const def=document.createElement('option');def.value='';def.textContent='（默认）';sel.appendChild(def);p.models.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)})}
-function renderOnboard(){document.getElementById('onboard').style.display='block';document.getElementById('main').style.display='none';const g=document.getElementById('ob-grid');g.innerHTML='';STATE.providers_catalog.forEach(p=>{const d=document.createElement('div');d.className='pcard';d.innerHTML='<div class="pn">'+p.name+'</div><div class="pnote">'+p.note+'</div>';d.onclick=()=>{obSel=p.id;document.querySelectorAll('#ob-grid .pcard').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');document.getElementById('ob1next').disabled=false};g.appendChild(d)})}
+function renderTagBar(containerId,activeTag,onClick){const c=document.getElementById(containerId);c.innerHTML='';TAGS.forEach(t=>{const b=document.createElement('div');b.className='tag-btn'+(t.id===activeTag?' active':'');b.textContent=t.label;b.onclick=()=>onClick(t.id);c.appendChild(b)})}
+function filterProviders(tag,search){let list=STATE.providers_catalog;if(tag&&tag!=='all')list=list.filter(p=>(p.tags||[]).includes(tag));if(search){const q=search.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.note||'').toLowerCase().includes(q))}return list}
+function renderGrid(gridId,providers,selId,onSelect){const g=document.getElementById(gridId);g.innerHTML='';providers.forEach(p=>{const d=document.createElement('div');d.className='pcard'+(selId===p.id?' sel':'');d.innerHTML='<div class="pn">'+esc(p.name)+'</div><div class="pnote">'+esc(p.note)+'</div>';d.onclick=()=>onSelect(p.id);g.appendChild(d)});if(!providers.length){g.innerHTML='<div style="padding:20px;text-align:center;color:var(--fg-muted);font-family:var(--font-mono);font-size:12px">没有匹配的供应商</div>'}else{const rem=providers.length%4;if(rem>0){for(let i=0;i<4-rem;i++){const d=document.createElement('div');d.className='pcard-ph';d.style.visibility='hidden';g.appendChild(d)}}}}
+function renderOnboard(){document.getElementById('onboard').style.display='block';document.getElementById('configured').style.display='none';obSel=null;obTag='all';obSearch='';document.getElementById('ob-search').value='';renderTagBar('ob-tags',obTag,(id)=>{obTag=id;obFilter()});obFilter();obStep(1);document.getElementById('ob1next').disabled=true;document.getElementById('obs2').style.display='none';document.getElementById('obs3').style.display='none';document.getElementById('obs4').style.display='none'}
+function obFilter(){const list=filterProviders(obTag,obSearch);renderGrid('ob-grid',list,obSel,(id)=>{obSel=id;obFilter();const p=STATE.providers_catalog.find(x=>x.id===id);document.getElementById('ob2desc').textContent=p.note;const isC=p.custom||!p.base_url;document.getElementById('ob-urllabel').style.display=isC?'block':'none';document.getElementById('ob-url').style.display=isC?'block':'none';document.getElementById('ob-key').placeholder=p.key_hint;fillModels(document.getElementById('ob-model'),document.getElementById('ob-modelcustom'),id);document.getElementById('ob1next').disabled=false})}
 function obStep(n){[1,2,3,4].forEach(i=>{document.getElementById('obs'+i).style.display=i===n?'block':'none';const s=document.getElementById('ob'+i);s.classList.toggle('active',i===n);if(i<n)s.classList.add('done');else s.classList.remove('done')})}
 function obNext(n){if(n===2){const p=STATE.providers_catalog.find(x=>x.id===obSel);document.getElementById('ob2desc').textContent=p.note;const isC=p.custom||!p.base_url;document.getElementById('ob-urllabel').style.display=isC?'block':'none';document.getElementById('ob-url').style.display=isC?'block':'none';document.getElementById('ob-key').placeholder=p.key_hint;fillModels(document.getElementById('ob-model'),document.getElementById('ob-modelcustom'),obSel)}obStep(n)}
 async function obTest(){const m=document.getElementById('ob-testmsg');m.className='msg wait';m.textContent='测试中…';document.getElementById('ob-testbtn').disabled=true;const r=await api('/api/test','POST',obPayload());document.getElementById('ob-testbtn').disabled=false;m.className='msg '+(r.ok?'ok':'err');m.textContent=(r.ok?'OK ':'ERR ')+r.message}
 function obPayload(){const p=STATE.providers_catalog.find(x=>x.id===obSel);const isC=p.custom||!p.base_url;const model=(document.getElementById('ob-model').style.display==='none')?document.getElementById('ob-modelcustom').value:document.getElementById('ob-model').value;return{name:p.name,base_url:isC?document.getElementById('ob-url').value:p.base_url,api_key:document.getElementById('ob-key').value,model:model}}
 async function obSave(){const pl=obPayload();if(!pl.api_key){toast('请先填写 API Key','err');obStep(2);return}if(!pl.base_url){toast('请填写 Base URL','err');obStep(2);return}const r=await api('/api/save','POST',pl);if(r.ok){const m=document.getElementById('ob-donemsg');m.style.display='block';m.textContent='配置已保存。可以关闭此页面回到终端了。';document.getElementById('ob-savebtn').disabled=true;toast('已保存','ok');setTimeout(load,1200)}else toast('失败: '+(r.error||''),'err')}
-function renderMain(){document.getElementById('onboard').style.display='none';document.getElementById('configured').style.display='block';const g=document.getElementById('m-grid');g.innerHTML='';STATE.providers_catalog.forEach(p=>{const d=document.createElement('div');d.className='pcard';d.innerHTML='<div class="pn">'+p.name+'</div><div class="pnote">'+p.note+'</div>';d.onclick=()=>{mSel=p.id;document.querySelectorAll('#m-grid .pcard').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');mPick(p);populateQuickSwitch()};g.appendChild(d)});const sl=document.getElementById('saved-list');sl.innerHTML='';(STATE.saved||[]).forEach(s=>{const d=document.createElement('div');d.className='saved-item';d.innerHTML='<span>'+s.name+'</span>'+(s.active?'<span class="badge">当前</span>':'<button class="ghost" style="padding:5px 12px;font-size:10px" data-act="'+s.id+'">切换</button>');sl.appendChild(d)});if(!STATE.saved||!STATE.saved.length)sl.innerHTML='<div class="hint">还没有保存的供应商</div>';/* 已配置：自动定位当前生效的供应商 */const c=STATE.current||{};let target=null;if(c.provider_hint&&STATE.providers_catalog.some(p=>p.id===c.provider_hint)){target=c.provider_hint}else if(c.base_url){const hit=STATE.providers_catalog.find(p=>p.base_url&&p.base_url.toLowerCase().replace(/\/$/,'')===c.base_url.toLowerCase().replace(/\/$/,''));if(hit)target=hit.id}if(target){mSel=target;document.querySelectorAll('#m-grid .pcard').forEach(x=>x.classList.remove('sel'));const selCard=document.querySelector('#m-grid .pcard:nth-child('+(STATE.providers_catalog.findIndex(p=>p.id===target)+1)+')');if(selCard)selCard.classList.add('sel');const p=STATE.providers_catalog.find(x=>x.id===target);if(p)mPick(p)}if(c.api_key_masked){const k=document.getElementById('m-key');k.value='';k.placeholder='当前已保存: '+(c.name||'')+' · '+c.api_key_masked+'（粘贴新 Key 覆盖）'}}
-function populateQuickSwitch() {
-  const el = document.getElementById('quickSwitch');
-  const sel = document.getElementById('quickModel');
-  if (!el || !sel) return;
-  const p = STATE.providers_catalog.find(x => x.id === mSel);
-  if (!p || !p.models || p.models.length <= 1) { el.style.display = 'none'; return; }
-  el.style.display = 'block';
-  sel.innerHTML = p.models.map(m => {
-    const em = m.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    return '<option value="' + em + '">' + em + '</option>';
-  }).join('');
-}
-
-function quickSwitchModel() {
-  const sel = document.getElementById('quickModel');
-  if (!sel || !sel.value) return;
-  // Update the visible model select
-  const mainSel = document.getElementById('m-model');
-  if (mainSel) {
-    for (let opt of mainSel.options) {
-      if (opt.value === sel.value) { opt.selected = true; break; }
-    }
-  }
-  // Also update custom input as fallback
-  const modelInput = document.getElementById('m-modelcustom');
-  if (modelInput) modelInput.value = sel.value;
-  mSave();
-  toast('已切换到 ' + sel.value, 'ok');
-}
-
-function mPick(p){
-  populateQuickSwitch();const isC=p.custom||!p.base_url;document.getElementById('m-urllabel').style.display=isC?'block':'none';document.getElementById('m-url').style.display=isC?'block':'none';document.getElementById('m-key').placeholder=p.key_hint;fillModels(document.getElementById('m-model'),document.getElementById('m-modelcustom'),p.id)}
+function renderMain(){document.getElementById('onboard').style.display='none';document.getElementById('configured').style.display='block';mSel=null;mTag='all';mSearch='';document.getElementById('m-search').value='';renderTagBar('m-tags',mTag,(id)=>{mTag=id;mFilter()});mFilter();const sl=document.getElementById('saved-list');sl.innerHTML='';(STATE.saved||[]).forEach(s=>{const d=document.createElement('div');d.className='saved-item';d.innerHTML='<span>'+esc(s.name)+'</span>'+(s.active?'<span class="badge">当前</span>':'<button class="ghost" style="padding:5px 12px;font-size:10px" data-act="'+s.id+'">切换</button>');sl.appendChild(d)});if(!STATE.saved||!STATE.saved.length)sl.innerHTML='<div class="hint">还没有保存的供应商</div>';const c=STATE.current||{};let target=null;if(c.provider_hint&&STATE.providers_catalog.some(p=>p.id===c.provider_hint)){target=c.provider_hint}else if(c.base_url){const hit=STATE.providers_catalog.find(p=>p.base_url&&p.base_url.toLowerCase().replace(/\/$/,'')===c.base_url.toLowerCase().replace(/\/$/,''));if(hit)target=hit.id}if(target){mSel=target;mFilter();const p=STATE.providers_catalog.find(x=>x.id===target);if(p)mPick(p)}if(c.api_key_masked){const k=document.getElementById('m-key');k.value='';k.placeholder='当前已保存: '+(c.name||'')+' · '+c.api_key_masked+'（粘贴新 Key 覆盖）'}}
+function mFilter(){const list=filterProviders(mTag,mSearch);renderGrid('m-grid',list,mSel,(id)=>{mSel=id;mFilter();const p=STATE.providers_catalog.find(x=>x.id===id);mPick(p);populateQuickSwitch()})}
+function populateQuickSwitch(){const el=document.getElementById('quickSwitch');const sel=document.getElementById('quickModel');if(!el||!sel)return;const p=STATE.providers_catalog.find(x=>x.id===mSel);if(!p||!p.models||p.models.length<=1){el.style.display='none';return}el.style.display='block';sel.innerHTML=p.models.map(m=>{const em=m.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');return'<option value="'+em+'">'+em+'</option>'}).join('')}
+function quickSwitchModel(){const sel=document.getElementById('quickModel');if(!sel||!sel.value)return;const mainSel=document.getElementById('m-model');if(mainSel){for(let opt of mainSel.options){if(opt.value===sel.value){opt.selected=true;break}}}const modelInput=document.getElementById('m-modelcustom');if(modelInput)modelInput.value=sel.value;mSave();toast('已切换到 '+sel.value,'ok')}
+function mPick(p){populateQuickSwitch();const isC=p.custom||!p.base_url;document.getElementById('m-urllabel').style.display=isC?'block':'none';document.getElementById('m-url').style.display=isC?'block':'none';document.getElementById('m-key').placeholder=p.key_hint;fillModels(document.getElementById('m-model'),document.getElementById('m-modelcustom'),p.id)}
 function mPayload(){const p=STATE.providers_catalog.find(x=>x.id===mSel);const isC=p.custom||!p.base_url;const model=(document.getElementById('m-model').style.display==='none')?document.getElementById('m-modelcustom').value:document.getElementById('m-model').value;return{name:p.name,base_url:isC?document.getElementById('m-url').value:p.base_url,api_key:document.getElementById('m-key').value,model:model}}
 async function mTest(){if(!mSel){toast('先选一个供应商','err');return}const m=document.getElementById('m-msg');m.className='msg wait';m.textContent='测试中…';const r=await api('/api/test','POST',mPayload());m.className='msg '+(r.ok?'ok':'err');m.textContent=(r.ok?'OK ':'ERR ')+r.message}
 async function mSave(){if(!mSel){toast('先选一个供应商','err');return}const pl=mPayload();if(!pl.api_key){toast('请填写 API Key','err');return}if(!pl.base_url){toast('请填写 Base URL','err');return}const r=await api('/api/save','POST',pl);if(r.ok){toast('已保存','ok');setTimeout(load,800)}else toast('失败: '+(r.error||''),'err')}
@@ -429,7 +423,6 @@ function opsImport(){document.getElementById('import-file').click()}
 document.getElementById('import-file').addEventListener('change',function(e){const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{const blob=JSON.parse(rd.result);const r=await api('/api/import','POST',blob);if(r.ok){toast('已导入 '+r.count+' 个供应商','ok');opsMsg('导入成功：'+r.count+' 个供应商','ok');setTimeout(load,900)}else{opsMsg('导入失败: '+(r.error||''),'err')}}catch(err){opsMsg('文件解析失败: '+err,'err')}};rd.readAsText(f);e.target.value=''});
 async function opsLogs(){opsMsg('读取日志…');const r=await api('/api/logs');if(!r.available){opsMsg(r.text||'无日志','err');document.getElementById('ops-out').style.display='none';return}opsMsg('日志: '+(r.file||''),'ok');opsOut(r.text||'(空)')}
 async function opsUnbind(){if(!confirm('确定解绑当前设备？解绑后此便携包可在其他设备/位置运行。'))return;const r=await api('/api/unbind','POST',{});if(r.ok){toast('已解绑 '+r.removed+' 个锁','ok');opsMsg('已移除 '+r.removed+' 个绑定锁，下次运行将重新绑定到当前位置。','ok')}}
-
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.querySelector('.panel[data-panel="'+t.dataset.tab+'"]').classList.add('active')});
 document.getElementById('saved-list').addEventListener('click',function(e){const btn=e.target.closest('button[data-act]');if(btn)activate(btn.getAttribute('data-act'))});
 function toggleTheme(){const h=document.documentElement;const cur=h.getAttribute('data-theme');const next=cur==='light'?'dark':'light';h.setAttribute('data-theme',next);try{localStorage.setItem('theme',next)}catch(e){}}
