@@ -544,12 +544,24 @@ def read_current():
             return None
         cfg = json.loads(row[2])
         env = cfg.get("env", {})
+        api_key = (env.get("ANTHROPIC_AUTH_TOKEN")
+                    or env.get("ANTHROPIC_API_KEY") or "").strip()
+        base_url = (env.get("ANTHROPIC_BASE_URL") or "").strip()
+        # Build provider_hint: try to match base_url against catalog
+        provider_hint = None
+        hit = next((p for p in PROVIDERS if p.get("base_url") and
+                    p["base_url"].lower().rstrip("/") == base_url.lower().rstrip("/")), None)
+        if hit:
+            provider_hint = hit["id"]
+        # Mask API key for display
+        masked = (api_key[:6] + "…" + api_key[-4:]) if len(api_key) > 12 else "***"
         return {
             "id": row[0], "name": row[1],
-            "base_url": (env.get("ANTHROPIC_BASE_URL") or "").strip(),
-            "api_key": (env.get("ANTHROPIC_AUTH_TOKEN")
-                        or env.get("ANTHROPIC_API_KEY") or "").strip(),
+            "base_url": base_url,
+            "api_key": api_key,
             "model": (env.get("ANTHROPIC_MODEL") or "").strip(),
+            "provider_hint": provider_hint,
+            "api_key_masked": masked,
         }
     except Exception:
         return None
@@ -1107,6 +1119,8 @@ class Handler(BaseHTTPRequestHandler):
         body = html.encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate")
+        self.send_header("Pragma", "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("X-Frame-Options", "DENY")
         self.send_header("Content-Security-Policy",
