@@ -237,7 +237,6 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
   <span class="y-xs">claude code portable · config</span>
   <h1 class="y-display">claude</h1>
   <p class="y-sub">便携 AI 编程助手 · 配置模型 · 一键启动</p>
-  <span class="y-ver" id="hero-ver">v0.7.3 · 零安装 · 跨平台</span>
  </div>
   <div class="y-term">
     <div class="y-term-h"><span class="y-td"></span><span class="y-td"></span><span class="y-td"></span><span class="y-term-label">claude</span></div>
@@ -317,7 +316,13 @@ code{font-family:var(--font-mono);border:1px solid var(--border);padding:1px 6px
         <span>没有 API Key？<b>去 yu.ai 官网免费领取</b> → 复制后粘到下方即可</span>
       </a>
       <div class="section">
-        <h2>当前供应商</h2>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <h2 style="margin:0">当前供应商</h2>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span id="catStatus" style="font-family:var(--font-mono);font-size:.65rem;color:var(--fg-muted);display:none"></span>
+            <button id="catRefreshBtn" onclick="refreshModels()" style="padding:6px 12px;font-size:.7rem;font-family:var(--font-mono);background:var(--secondary);color:var(--fg);border:1px solid var(--border);border-radius:4px;cursor:pointer">↻ 更新模型</button>
+          </div>
+        </div>
         <div class="desc">修改后点保存即生效，下次启动 Claude Code 使用新配置。</div>
         <div class="tag-bar" id="m-tags"></div>
         <div class="search-box"><input id="m-search" placeholder="搜索供应商名称或备注…" oninput="mFilter()"></div>
@@ -394,6 +399,31 @@ const TAGS=[{id:'all',label:'全部'},{id:'hot',label:'热门'},{id:'cn',label:'
 function toast(msg,kind){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(kind||'');setTimeout(()=>t.className='toast',2600)}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 async function api(path,method,body){const tok=(document.querySelector('meta[name="cc-token"]')||{}).content||'';const opt={method:method||'GET',headers:{'Content-Type':'application/json','X-CC-Token':tok}};if(body)opt.body=JSON.stringify(body);const r=await fetch(path,opt);return r.json()}
+
+/* ── Model catalog hot-refresh ── */
+let _catBusy=false;
+async function refreshModels(){
+  if(_catBusy)return;_catBusy=true;
+  const btn=document.getElementById('catRefreshBtn');
+  const st=document.getElementById('catStatus');
+  if(btn){btn.disabled=true;btn.style.opacity='.55'}
+  try{
+    const d=await api('/api/models/refresh','POST',{});
+    if(d.ok&&Array.isArray(d.providers)){
+      STATE.providers_catalog=d.providers;
+      renderMain&&renderMain();
+      if(obSel||mSel){try{renderOnboard?renderOnboard():renderMain()}catch(e){}}
+      if(st){st.textContent='模型清单已更新至 '+(d.version||d.updatedAt||'最新');st.style.color='var(--emerald,#3ecf8e)';st.style.display='block'}
+    }else{
+      if(st){st.textContent='刷新失败: '+(d.error||'未知错误');st.style.color='var(--red,#c84a3e)';st.style.display='block'}
+    }
+  }catch(e){
+    if(st){st.textContent='刷新失败：'+(e.message||e);st.style.color='var(--red,#c84a3e)';st.style.display='block'}
+  }finally{
+    if(btn){btn.disabled=false;btn.style.opacity=''}
+    _catBusy=false;
+  }
+}
 function fillModels(sel,custom,provider){sel.innerHTML='';const p=STATE.providers_catalog.find(x=>x.id===provider);if(!p||p.custom||!p.models.length){sel.style.display='none';custom.style.display='block';return}sel.style.display='block';custom.style.display='none';if(p.models.length===1){const o=document.createElement('option');o.value=p.models[0];o.textContent=p.models[0];o.selected=true;sel.appendChild(o);return}const def=document.createElement('option');def.value='';def.textContent='（默认）';sel.appendChild(def);p.models.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)})}
 function renderTagBar(containerId,activeTag,onClick){const c=document.getElementById(containerId);c.innerHTML='';TAGS.forEach(t=>{const b=document.createElement('div');b.className='tag-btn'+(t.id===activeTag?' active':'');b.textContent=t.label;b.onclick=()=>onClick(t.id);c.appendChild(b)})}
 function filterProviders(tag,search){let list=STATE.providers_catalog;if(tag&&tag!=='all')list=list.filter(p=>(p.tags||[]).includes(tag));if(search){const q=search.toLowerCase();list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.note||'').toLowerCase().includes(q))}return list}

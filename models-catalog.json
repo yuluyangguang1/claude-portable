@@ -1,0 +1,106 @@
+{
+  "version": "2026.08.28",
+  "updatedAt": "2026-08-28T00:00:00Z",
+  "source": "claude-portable",
+  "providers": [
+    {
+      "id": "anthropic",
+      "name": "Anthropic 官方",
+      "base_url": "https://api.anthropic.com",
+      "models": ["claude-fable-5", "claude-opus-5", "claude-opus-5-fast", "claude-opus-4-8-fast", "claude-opus-4-8", "claude-opus-4-7-fast", "claude-opus-4-7", "claude-opus-4-6-fast", "claude-opus-4-6", "claude-opus-4-5", "claude-opus-4.1", "claude-opus-4", "claude-sonnet-5", "claude-sonnet-4-6", "claude-sonnet-4.5", "claude-sonnet-4", "claude-haiku-latest", "claude-haiku-4-5"],
+      "key_hint": "sk-ant-...",
+      "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)",
+      "tags": ["hot"]
+    },
+    {
+      "id": "openrouter",
+      "name": "OpenRouter",
+      "base_url": "https://openrouter.ai/api",
+      "models": ["anthropic/claude-fable-5", "anthropic/claude-opus-5", "anthropic/claude-opus-5-fast", "anthropic/claude-opus-4-8", "anthropic/claude-opus-4-7", "anthropic/claude-sonnet-4-6", "anthropic/claude-opus-4.1", "anthropic/claude-sonnet-4.5", "openai/gpt-5.6-sol-pro", "openai/gpt-5.6-sol", "openai/gpt-5.5-pro", "openai/gpt-4o", "openai/gpt-4o-mini", "google/gemini-3.7-flash", "google/gemini-3.6-flash", "google/gemini-3.5-flash-lite", "google/gemini-2.5-flash", "google/gemini-2.5-pro", "x-ai/grok-4.6", "x-ai/grok-4.5", "x-ai/grok-4.3", "deepseek/deepseek-v4-pro", "deepseek/deepseek-v4-pro-0813", "deepseek/deepseek-v4-flash", "deepseek/deepseek-v3.2", "qwen/qwen3.7-max", "qwen/qwen3.7-plus", "qwen/qwen3.7-flash", "qwen/qwen3-coder-flash", "qwen/qwen3-coder-next", "qwen/qwen3-235b-a22b", "meta-llama/llama-4-maverick", "meta-llama/llama-4-scout", "moonshotai/kimi-k3", "z-ai/glm-5.3", "z-ai/glm-5.2", "z-ai/glm-4.5v", "minimax/minimax-m3", "minimax/minimax-m2.7", "mistralai/mistral-large", "mistralai/mistral-medium-3", "mistralai/devstral-2512"],
+      "key_hint": "sk-or-...",
+      "note": "聚合 100+ 模型，一个 Key 通用",
+      "tags": ["hot", "cheap"]
+    },
+    {
+      "id": "deepseek",
+      "name": "DeepSeek",
+      "base_url": "https://api.deepseek.com/anthropic",
+      "models": ["deepseek-v4-pro", "deepseek-v4-pro-0813", "deepseek-v4-flash", "deepseek-v4-flash-0731", "deepseek-r1", "deepseek-r1-0528", "deepseek-chat", "deepseek-chat-v3.1", "deepseek-v3.2"],
+      "key_hint": "sk-...",
+      "note": "国产，V4-Pro 1M context，性价比极高，Anthropic 兼容",
+      "tags": ["hot", "cn", "cheap"]
+    },
+    {
+      "id": "minimax",
+      "name": "MiniMax (海螺)",
+      "base_url": "https://api.minimaxi.com/anthropic",
+      "models": ["MiniMax-M3", "MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2", "minimax-m2.1", "minimax-m2-her"],
+      "key_hint": "粘贴 MiniMax API Key",
+      "note": "国产，M3 最新，Anthropic 兼容，速度快",
+      "tags": ["cn", "hot"]
+    },
+    {
+      "id": "zhipu",
+      "name": "智谱 GLM",
+      "base_url": "https://open.bigmodel.cn/api/anthropic",
+      "models": ["glm-5.3", "glm-5.3-flash", "glm-5.2", "glm-5.1", "glm-5-turbo", "glm-5", "glm-4.7", "glm-4.7-flash", "glm-4.6", "glm-4.5-air", "glm-4.5-flash", "glm-4.5v", "glm-4.6v", "glm-5v-turbo"],
+      "key_hint": "粘贴智谱 API Key",
+      "note": "国产，GLM-5.3 最新，744B MoE，编码 SOTA",
+      "tags": ["cn", "hot"]
+    },
+    {
+      "id": "kimi",
+      "name": "Kimi / Moonshot",
+      "base_url": "https://api.moonshot.cn/anthropic",
+      "models": ["kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k", "kimi-k2", "kimi-k2-0905", "kimi-k2-thinking"],
+      "key_hint": "sk-...",
+      "note": "国产，K2.7 最新，1T MoE，256K context，多模态",
+      "tags": ["cn", "hot"]
+    },
+    {
+      "id": "dashscope",
+      "name": "通义千问 / 阿里",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/anthropic",
+      "models": ["qwen3.7-max", "qwen3.7-plus", "qwen3.7-flash", "qwen3.6-max-preview", "qwen3.6-plus", "qwen3-coder-plus", "qwen3-coder", "qwen3-max", "qwen-max-latest", "qwen-plus-latest", "qwen3-coder-flash", "qwen3-coder-next", "qwen3-235b-a22b"],
+      "key_hint": "sk-...",
+      "note": "阿里云，Qwen 3.7 最新，1M context，编码 SOTA",
+      "tags": ["cn", "hot"]
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "base_url": "https://generativelanguage.googleapis.com/v1beta/anthropic",
+      "models": ["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-3-pro-image", "gemini-3.1-flash-lite"],
+      "key_hint": "AIza...",
+      "note": "Google，Gemini 3.7 Flash 最新，1M context，多模态",
+      "tags": ["hot"]
+    },
+    {
+      "id": "xai",
+      "name": "xAI Grok",
+      "base_url": "https://api.x.ai/v1/anthropic",
+      "models": ["grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20", "grok-4.20-multi-agent", "grok-4", "grok-3", "grok-3-mini", "grok-build-0.1"],
+      "key_hint": "xai-...",
+      "note": "xAI，Grok-4.6 最新，256K context，推理强",
+      "tags": ["hot"]
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI 官方",
+      "base_url": "https://api.openai.com/v1",
+      "models": ["gpt-5.6-sol-pro", "gpt-5.6-sol", "gpt-5.6-terra-pro", "gpt-5.6-terra", "gpt-5.6-luna-pro", "gpt-5.6-luna", "gpt-5.5-pro", "gpt-5.5", "gpt-5.4-pro", "gpt-5.4", "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.1-codex-max", "gpt-5.1-codex-mini", "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano", "o4-mini-high", "o4-mini", "o3", "o3-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4o", "gpt-4o-mini"],
+      "key_hint": "sk-...",
+      "note": "官方直连，GPT-5.6 Sol/Terra/Luna 最新",
+      "tags": ["hot"]
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral",
+      "base_url": "https://api.mistral.ai/v1",
+      "models": ["mistral-large-2512", "mistral-large-latest", "mistral-medium-latest", "mistral-small-latest", "codestral-latest", "pixtral-large-latest", "ministral-8b-latest", "mistral-medium-3", "mistral-small-3.1", "devstral-2512", "codestral-2508"],
+      "key_hint": "粘贴 Mistral API Key",
+      "note": "Mistral Large 2512 最新，Codestral 代码专精",
+      "tags": ["hot"]
+    }
+  ]
+}

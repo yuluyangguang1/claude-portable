@@ -22,6 +22,7 @@ Usage:
 """
 import json
 import os
+import re
 import secrets
 import sqlite3
 import sys
@@ -32,6 +33,7 @@ import shutil
 import urllib.request
 import urllib.error
 import webbrowser
+from datetime import datetime, timezone
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
@@ -151,7 +153,9 @@ PROVIDERS = [
     {"id": "anthropic", "name": "Anthropic 官方", "base_url": "https://api.anthropic.com",
      "models": ["claude-fable-5", "claude-opus-5", "claude-opus-5-fast", "claude-opus-4-8-fast", "claude-opus-4-8",
                 "claude-opus-4-7-fast", "claude-opus-4-7", "claude-opus-4-6-fast", "claude-opus-4-6", "claude-opus-4-5",
-                "claude-sonnet-5", "claude-sonnet-4-6", "claude-haiku-latest", "claude-haiku-4-5"],
+                "claude-opus-4.1", "claude-opus-4",
+                "claude-sonnet-5", "claude-sonnet-4-6", "claude-sonnet-4.5", "claude-sonnet-4",
+                "claude-haiku-latest", "claude-haiku-4-5"],
      "key_hint": "sk-ant-...", "note": "官方直连，Fable 5 最新 (1M context, 动态工作流)",
      "tags": ["hot"]},
 
@@ -165,29 +169,42 @@ PROVIDERS = [
          "anthropic/claude-opus-4-8",
          "anthropic/claude-opus-4-7",
          "anthropic/claude-sonnet-4-6",
+         "anthropic/claude-opus-4.1",
+         "anthropic/claude-sonnet-4.5",
          "openai/gpt-5.6-sol-pro",
          "openai/gpt-5.6-sol",
          "openai/gpt-5.5-pro",
+         "openai/gpt-4o",
+         "openai/gpt-4o-mini",
          "google/gemini-3.7-flash",
          "google/gemini-3.6-flash",
          "google/gemini-3.5-flash-lite",
+         "google/gemini-2.5-flash",
+         "google/gemini-2.5-pro",
          "x-ai/grok-4.6",
          "x-ai/grok-4.5",
          "x-ai/grok-4.3",
          "deepseek/deepseek-v4-pro",
          "deepseek/deepseek-v4-pro-0813",
          "deepseek/deepseek-v4-flash",
+         "deepseek/deepseek-v3.2",
          "qwen/qwen3.7-max",
          "qwen/qwen3.7-plus",
          "qwen/qwen3.7-flash",
+         "qwen/qwen3-coder-flash",
+         "qwen/qwen3-coder-next",
+         "qwen/qwen3-235b-a22b",
          "meta-llama/llama-4-maverick",
          "meta-llama/llama-4-scout",
          "moonshotai/kimi-k3",
          "z-ai/glm-5.3",
          "z-ai/glm-5.2",
+         "z-ai/glm-4.5v",
          "minimax/minimax-m3",
          "minimax/minimax-m2.7",
          "mistralai/mistral-large",
+         "mistralai/mistral-medium-3",
+         "mistralai/devstral-2512",
      ],
      "key_hint": "sk-or-...", "note": "聚合 100+ 模型，一个 Key 通用",
      "tags": ["hot", "cheap"]},
@@ -198,7 +215,7 @@ PROVIDERS = [
     # deepseek-chat/reasoner: 2026-07-24 废弃，保留作兼容过渡
     {"id": "deepseek", "name": "DeepSeek", "base_url": "https://api.deepseek.com/anthropic",
      "models": ["deepseek-v4-pro", "deepseek-v4-pro-0813", "deepseek-v4-flash", "deepseek-v4-flash-0731", "deepseek-r1",
-                "deepseek-r1-0528", "deepseek-chat"],
+                "deepseek-r1-0528", "deepseek-chat", "deepseek-chat-v3.1", "deepseek-v3.2"],
      "key_hint": "sk-...", "note": "国产，V4-Pro 1M context，性价比极高，Anthropic 兼容",
      "tags": ["hot", "cn", "cheap"]},
 
@@ -207,7 +224,8 @@ PROVIDERS = [
     # M2.5: SWE-Bench 80.2%，编码旗舰
     # M2: 轻量高效，10B active / 230B total
     {"id": "minimax", "name": "MiniMax (海螺)", "base_url": "https://api.minimaxi.com/anthropic",
-     "models": ["MiniMax-M3", "MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2"],
+     "models": ["MiniMax-M3", "MiniMax-M2.7", "MiniMax-M2.7-highspeed", "MiniMax-M2.5", "MiniMax-M2",
+                "minimax-m2.1", "minimax-m2-her"],
      "key_hint": "粘贴 MiniMax API Key", "note": "国产，M3 最新，Anthropic 兼容，速度快",
      "tags": ["cn", "hot"]},
 
@@ -215,8 +233,8 @@ PROVIDERS = [
     # GLM-5.1: 744B MoE，SWE-Bench Pro SOTA，8h 持续执行
     # GLM-5: 上一代旗舰
     {"id": "zhipu", "name": "智谱 GLM", "base_url": "https://open.bigmodel.cn/api/anthropic",
-     "models": ["glm-5.3", "glm-5.2", "glm-5.1", "glm-5-turbo", "glm-5", "glm-4.7", "glm-4.7-flash",
-                "glm-4.6", "glm-4.5-air", "glm-4.5-flash"],
+     "models": ["glm-5.3", "glm-5.3-flash", "glm-5.2", "glm-5.1", "glm-5-turbo", "glm-5", "glm-4.7", "glm-4.7-flash",
+                "glm-4.6", "glm-4.5-air", "glm-4.5-flash", "glm-4.5v", "glm-4.6v", "glm-5v-turbo"],
      "key_hint": "粘贴智谱 API Key", "note": "国产，GLM-5.3 最新，744B MoE，编码 SOTA",
      "tags": ["cn", "hot"]},
 
@@ -224,7 +242,8 @@ PROVIDERS = [
     # K2.6: 1T MoE，256K context，多模态，SWE-Bench Pro 58.6%
     # K2.5: 上一代，256K context
     {"id": "kimi", "name": "Kimi / Moonshot", "base_url": "https://api.moonshot.cn/anthropic",
-     "models": ["kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k"],
+     "models": ["kimi-k3", "kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "kimi-k2-thinking-turbo", "moonshot-v1-128k",
+                "kimi-k2", "kimi-k2-0905", "kimi-k2-thinking"],
      "key_hint": "sk-...", "note": "国产，K2.7 最新，1T MoE，256K context，多模态",
      "tags": ["cn", "hot"]},
 
@@ -244,7 +263,8 @@ PROVIDERS = [
     # qwen3-max: 上一代旗舰
     {"id": "dashscope", "name": "通义千问 / 阿里", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/anthropic",
      "models": ["qwen3.7-max", "qwen3.7-plus", "qwen3.7-flash", "qwen3.6-max-preview", "qwen3.6-plus",
-                "qwen3-coder-plus", "qwen3-coder", "qwen3-max", "qwen-max-latest", "qwen-plus-latest"],
+                "qwen3-coder-plus", "qwen3-coder", "qwen3-max", "qwen-max-latest", "qwen-plus-latest",
+                "qwen3-coder-flash", "qwen3-coder-next", "qwen3-235b-a22b"],
      "key_hint": "sk-...", "note": "阿里云，Qwen 3.7 最新，1M context，编码 SOTA",
      "tags": ["cn", "hot"]},
 
@@ -268,14 +288,16 @@ PROVIDERS = [
     # Gemini 3.1 Pro: 长上下文，工具调用，agentic
     # Gemini 3.5 Flash: 高效率，接近 Pro 水平
     {"id": "gemini", "name": "Google Gemini", "base_url": "https://generativelanguage.googleapis.com/v1beta/anthropic",
-     "models": ["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview"],
+     "models": ["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-pro-preview", "gemini-3.5-flash", "gemini-3-flash-preview",
+                "gemini-2.5-flash", "gemini-2.5-pro", "gemini-3-pro-image", "gemini-3.1-flash-lite"],
      "key_hint": "AIza...", "note": "Google，Gemini 3.7 Flash 最新，1M context，多模态",
      "tags": ["hot"]},
 
     # ── xAI Grok ────────────────────────────────────────────────────
     # Grok-4: 256K context，并行工具调用，图文输入
     {"id": "xai", "name": "xAI Grok", "base_url": "https://api.x.ai/v1/anthropic",
-     "models": ["grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20", "grok-4.20-multi-agent", "grok-4", "grok-3", "grok-3-mini"],
+     "models": ["grok-4.6", "grok-4.5", "grok-4.3", "grok-4.20", "grok-4.20-multi-agent", "grok-4", "grok-3", "grok-3-mini",
+                "grok-build-0.1"],
      "key_hint": "xai-...", "note": "xAI，Grok-4.6 最新，256K context，推理强",
      "tags": ["hot"]},
 
@@ -312,7 +334,7 @@ PROVIDERS = [
                 "gpt-5.4-mini", "gpt-5.4-nano", "gpt-5.1-codex-max",
                 "gpt-5.1-codex-mini", "gpt-5.1-codex", "gpt-5.1", "gpt-5-mini", "gpt-5-nano",
                 "o4-mini-high", "o4-mini", "o3", "o3-mini",
-                "gpt-4.1", "gpt-4.1-mini"],
+                "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4o", "gpt-4o-mini"],
      "key_hint": "sk-...", "note": "官方直连，GPT-5.6 Sol/Terra/Luna 最新",
      "tags": ["hot"]},
 
@@ -320,7 +342,8 @@ PROVIDERS = [
     {"id": "mistral", "name": "Mistral", "base_url": "https://api.mistral.ai/v1",
      "models": ["mistral-large-2512", "mistral-large-latest", "mistral-medium-latest",
                 "mistral-small-latest", "codestral-latest", "pixtral-large-latest",
-                "ministral-8b-latest"],
+                "ministral-8b-latest",
+                "mistral-medium-3", "mistral-small-3.1", "devstral-2512", "codestral-2508"],
      "key_hint": "粘贴 Mistral API Key", "note": "Mistral Large 2512 最新，Codestral 代码专精",
      "tags": ["hot"]},
 
@@ -417,7 +440,8 @@ PROVIDERS = [
 
     # ── 新增 Provider ──
     {"id": "kimi", "name": "Kimi / Moonshot", "base_url": "https://api.moonshot.cn/anthropic",
-     "models": ["kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "moonshot-v1-128k"],
+     "models": ["kimi-k2.7-code", "kimi-k2.6", "kimi-k2.5", "moonshot-v1-128k",
+                "kimi-k2", "kimi-k2-0905", "kimi-k2-thinking"],
      "key_hint": "sk-...", "note": "Kimi K2.7 最新，代码专精"},
     
     
@@ -495,10 +519,176 @@ PROVIDERS = [
      "key_hint": "粘贴中转站 API Key", "note": "填写任意 Anthropic 兼容端点的 base_url"},
 ]
 
+# ── Model catalog hot-update (ported from codex-portable) ──
+# Catalog data lives in two places:
+#   repo-root models-catalog.json          ← maintainer's single source (shipped)
+#   data/.claude-portable/models-catalog.json  ← user-pulled cache (survives updates)
+# Users pull the latest via POST /api/models/refresh, which walks a source
+# list (jsDelivr → raw.githubusercontent → ghproxy mirror) so it works from
+# both global and CN networks. Advanced users can override the source list by
+# writing data/.claude-portable/catalog-sources.json.
+CATALOG_USER = DATA_DIR / ".claude-portable" / "models-catalog.json"
+CATALOG_SHIPPED = PORTABLE_ROOT / "models-catalog.json"
+CATALOG_STALE_MS = 7 * 24 * 3600 * 1000
+MODEL_CATALOG_FETCH_CAP = 2 * 1024 * 1024  # 2 MB — real catalogs are <300 KB
+DEFAULT_CATALOG_SOURCES = [
+    "https://cdn.jsdelivr.net/gh/yuluyangguang1/claude-portable@main/models-catalog.json",
+    "https://raw.githubusercontent.com/yuluyangguang1/claude-portable/main/models-catalog.json",
+    "https://ghproxy.net/https://raw.githubusercontent.com/yuluyangguang1/claude-portable/main/models-catalog.json",
+]
 
-# ═══════════════════════════════════════════════════════════════
-#  cc-switch DB read / write
-# ═══════════════════════════════════════════════════════════════
+_catalog_lock = threading.Lock()
+
+
+def _read_catalog_file(file_path):
+    """Parse + structurally validate a catalog file. Returns dict or None."""
+    try:
+        if not os.path.exists(file_path):
+            return None
+        j = json.loads(open(file_path, encoding="utf-8").read())
+        if not isinstance(j, dict) or not isinstance(j.get("providers"), list):
+            return None
+        return j
+    except Exception:
+        return None
+
+
+def _sanitize_catalog(raw):
+    """Normalize + sanitize an untrusted catalog. Returns clean
+    {version, updatedAt, providers} or None if too malformed."""
+    lst = raw if isinstance(raw, list) else (
+        raw.get("providers") if isinstance(raw, dict) and isinstance(raw.get("providers"), list) else None)
+    if not lst or len(lst) < 1 or len(lst) > 300:
+        return None
+    seen = set()
+    out = []
+    total_models = 0
+    for item in lst:
+        if not isinstance(item, dict):
+            continue
+        pid = item.get("id")
+        pid = pid.strip()[:64] if isinstance(pid, str) else ""
+        if not pid or re.search(r'[\r\n"\'\\<>/]', pid) or pid in seen:
+            continue
+        seen.add(pid)
+
+        def clean_text(v, mx):
+            return str(v).replace("<", "").replace(">", "").strip()[:mx] if v is not None else ""
+
+        p = {"id": pid,
+             "name": clean_text(item.get("name"), 80) or pid,
+             "models": [], "tags": []}
+        if isinstance(item.get("models"), list):
+            p["models"] = [str(m).strip()[:200] for m in item["models"]
+                           if isinstance(m, str) and m.strip()][:1000]
+        total_models += len(p["models"])
+        if total_models > 20000:
+            return None
+        if isinstance(item.get("tags"), list):
+            p["tags"] = [t for t in item["tags"] if isinstance(t, str)
+                         and re.match(r'^[a-z]{1,12}$', t)][:8]
+        if isinstance(item.get("base_url"), str):
+            p["base_url"] = item["base_url"].strip()[:500]
+        if isinstance(item.get("key_hint"), str):
+            p["key_hint"] = clean_text(item.get("key_hint"), 100)
+        if isinstance(item.get("note"), str):
+            p["note"] = clean_text(item.get("note"), 200)
+        if isinstance(item.get("custom"), bool) and item["custom"]:
+            p["custom"] = True
+        out.append(p)
+    if len(out) < 3:
+        return None
+    version = raw.get("version", "unknown") if isinstance(raw, dict) else "unknown"
+    updated = raw.get("updatedAt") if isinstance(raw, dict) else None
+    return {
+        "version": str(version)[:40],
+        "updatedAt": str(updated)[:40] if updated else "",
+        "providers": out,
+    }
+
+
+def _write_user_catalog(catalog, source):
+    os.makedirs(CATALOG_USER.parent, exist_ok=True)
+    to_write = dict(catalog, fetchedAt=datetime.now(timezone.utc).isoformat(), source=source)
+    tmp = str(CATALOG_USER) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(to_write, f, ensure_ascii=False)
+    os.replace(tmp, CATALOG_USER)
+    return to_write
+
+
+def _fetch_catalog_sources():
+    """Walk DEFAULT_CATALOG_SOURCES (or user override); return (catalog, source, errors)."""
+    sources = list(DEFAULT_CATALOG_SOURCES)
+    custom_path = DATA_DIR / ".claude-portable" / "catalog-sources.json"
+    try:
+        custom = json.loads(open(custom_path, encoding="utf-8").read())
+        if isinstance(custom, list) and custom and all(
+                isinstance(u, str) and u.startswith("http") for u in custom):
+            sources = custom[:8]
+    except Exception:
+        pass
+    errors = []
+    for url in sources:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "ClaudePortable"})
+            with urllib.request.urlopen(req, timeout=12) as resp:
+                raw = resp.read(MODEL_CATALOG_FETCH_CAP + 1)
+            if len(raw) > MODEL_CATALOG_FETCH_CAP:
+                errors.append(url + " → too large")
+                continue
+            parsed = json.loads(raw.decode("utf-8"))
+            clean = _sanitize_catalog(parsed)
+            if not clean:
+                errors.append(url + " → catalog invalid")
+                continue
+            return clean, url, errors
+        except Exception as e:
+            errors.append(f"{url} → {e}")
+    return None, None, errors
+
+
+def _merge_catalog_with_providers(catalog):
+    """Merge hot-catalog data into the static PROVIDERS list.
+    Returns (merged_list, version, updated_at, is_stale)."""
+    cat = catalog
+    if not cat:
+        return PROVIDERS, "", "", True
+    clean = _sanitize_catalog(cat)
+    if not clean:
+        return PROVIDERS, "", "", True
+    version = clean.get("version", "")
+    updated_at = clean.get("updatedAt", "")
+    # Check staleness
+    fetched_at = cat.get("fetchedAt", "")
+    is_stale = True
+    if fetched_at:
+        try:
+            from datetime import datetime as dt
+            fetched_dt = dt.fromisoformat(fetched_at.replace("Z", "+00:00"))
+            age_ms = (dt.now(timezone.utc) - fetched_dt).total_seconds() * 1000
+            is_stale = age_ms > CATALOG_STALE_MS
+        except Exception:
+            pass
+    # Merge: for each catalog provider, update matching static provider's models
+    static_by_id = {p["id"]: p for p in PROVIDERS}
+    merged = []
+    seen_ids = set()
+    for cp in clean["providers"]:
+        seen_ids.add(cp["id"])
+        base = static_by_id.get(cp["id"])
+        if base:
+            merged_p = dict(base)
+            if cp.get("models"):
+                merged_p["models"] = cp["models"]
+            merged.append(merged_p)
+        else:
+            merged.append(cp)
+    # Append static providers not in catalog
+    for sp in PROVIDERS:
+        if sp["id"] not in seen_ids:
+            merged.append(sp)
+    return merged, version, updated_at, is_stale
 def _connect():
     CCS_DIR.mkdir(parents=True, exist_ok=True)
     return sqlite3.connect(str(CCS_DB), timeout=5.0)
@@ -1145,13 +1335,17 @@ class Handler(BaseHTTPRequestHandler):
             if self.path in ("/", "/index.html"):
                 self._html(PAGE)
             elif self.path == "/api/state":
-                # Strip the full api_key from the public state — the UI
-                # never needs it (it shows a masked value via /api/view).
                 cur = read_current()
                 if cur:
                     cur = {k: v for k, v in cur.items() if k != "api_key"}
+                # Merge catalog with static providers
+                cat = _read_catalog_file(CATALOG_USER) or _read_catalog_file(CATALOG_SHIPPED)
+                merged, ver, updated_at, is_stale = _merge_catalog_with_providers(cat)
                 self._json({
-                    "providers_catalog": PROVIDERS,
+                    "catalog_version": ver,
+                    "catalog_updated_at": updated_at,
+                    "catalog_stale": is_stale,
+                    "providers_catalog": merged,
                     "current": cur,
                     "saved": list_providers(),
                     "has_config": cur is not None,
@@ -1164,6 +1358,20 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(read_logs())
             elif self.path == "/api/diagnose":
                 self._json({"checks": run_diagnose()})
+            elif self.path == "/api/models/catalog":
+                cat = _read_catalog_file(CATALOG_USER) or _read_catalog_file(CATALOG_SHIPPED)
+                if cat:
+                    clean = _sanitize_catalog(cat)
+                    if clean:
+                        self._json({
+                            "ok": True,
+                            "version": clean.get("version", ""),
+                            "updatedAt": clean.get("updatedAt", ""),
+                            "stale": True,
+                            "providers": clean["providers"],
+                        })
+                        return
+                self._json({"ok": False, "error": "no catalog available"})
             else:
                 self._json({"error": "not found"}, 404)
         except Exception as e:
@@ -1206,6 +1414,31 @@ class Handler(BaseHTTPRequestHandler):
                 ok, msg = test_key(data.get("base_url", ""),
                                    data.get("api_key", ""), data.get("model", ""))
                 self._json({"ok": ok, "message": msg})
+            elif self.path == "/api/models/refresh":
+                with _catalog_lock:
+                    cat, source, errors = _fetch_catalog_sources()
+                if not cat:
+                    self._json({"ok": False, "error": "所有源均失败: " + "; ".join(errors)[:300]})
+                    return
+                written = _write_user_catalog(cat, source)
+                self._json({
+                    "ok": True, "updated": True,
+                    "version": written["version"],
+                    "updatedAt": written["updatedAt"],
+                    "source": source,
+                    "providers": written["providers"],
+                })
+            elif self.path == "/api/models/reset":
+                try:
+                    if CATALOG_USER.exists():
+                        os.remove(CATALOG_USER)
+                except OSError:
+                    pass
+                ship = _read_catalog_file(CATALOG_SHIPPED)
+                if ship and _sanitize_catalog(ship):
+                    self._json({"ok": True, "providers": _sanitize_catalog(ship)["providers"]})
+                else:
+                    self._json({"ok": True, "providers": []})
             elif self.path == "/api/activate":
                 activate_provider(data.get("id", ""))
                 self._json({"ok": True})
